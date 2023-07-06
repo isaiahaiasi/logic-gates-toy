@@ -28,6 +28,12 @@ module.exports = {
 				'./src/**/*.ts',
 				'./src/**/*.tsx',
 			],
+			rules: {
+				'@typescript-eslint/consistent-type-definitions': [
+					'error',
+					'interface',
+				],
+			},
 		},
 	],
 	parserOptions: {
@@ -36,7 +42,6 @@ module.exports = {
 	},
 	plugins: [
 		'react',
+		'@typescript-eslint',
 	],
-	rules: {
-	},
 };
