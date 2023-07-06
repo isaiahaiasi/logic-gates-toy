@@ -5,10 +5,8 @@ export default class AndChip extends NodeChip {
 		super(2, 1);
 	}
 
-	propogate() {
+	process() {
 		const active = Boolean(this.inputs[0] && this.inputs[1]);
-		for (let i = 0; i < this.outputs.length; i++) {
-			this.setOutput(i, active);
-		}
+		this.setOutput(0, active);
 	}
 }

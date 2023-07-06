@@ -1,7 +1,7 @@
-type NodeInput = [NodeChip, number];
+type NodeInput = [NodeChip, number]; // Number is the node's input index
 
 interface Output {
-	nodeInput?: NodeInput;
+	nodeInputs: NodeInput[];
 	state: boolean;
 }
 
@@ -13,13 +13,13 @@ export default class NodeChip {
 		this.inputs = new Array<boolean>(inputCnt).fill(false);
 		this.outputs = new Array<undefined>(outputCnt)
 			.fill(undefined)
-			.map(() => ({state: false}));
+			.map(() => ({nodeInputs: [], state: false}));
 	}
 
-	propogate() {
+	process() {
 		// Stub method, to be extended
 		this.outputs.forEach((output, i) => {
-			if (!output.nodeInput) {
+			if (!output.nodeInputs.length) {
 				return;
 			}
 
@@ -34,12 +34,13 @@ export default class NodeChip {
 
 		const output = this.outputs[output_idx];
 
-		if (!Array.isArray(output.nodeInput)) {
+		if (!output.nodeInputs.length) {
 			return;
 		}
 
-		const [node, inputIdx] = output.nodeInput;
-		node.setInput(inputIdx, active);
+		output.nodeInputs.forEach(([node, inputIdx]) => {
+			node.setInput(inputIdx, active);
+		});
 	}
 
 	setInput(input_idx: number, active: boolean) {
@@ -48,7 +49,7 @@ export default class NodeChip {
 		}
 
 		this.inputs[input_idx] = active;
-		this.propogate();
+		this.process();
 	}
 }
 
