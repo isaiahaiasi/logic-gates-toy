@@ -1,4 +1,4 @@
-import {type OutputInfo, type Chip, type ChipPin} from './CircuitElement';
+import {type OutputInfo, type Chip, type ChipPin} from './Chip';
 
 export class Gate implements Chip {
 	inputs: boolean[];
@@ -11,8 +11,12 @@ export class Gate implements Chip {
 			.map(() => ({listeners: [], state: false}));
 	}
 
-	addListener(outputIdx: number, listener: ChipPin) {
-		this.outputs[outputIdx].listeners.push(listener);
+	addListener(outputPin: number, listener: ChipPin) {
+		if (outputPin >= this.outputs.length) {
+			throw new Error('Invalid output index!');
+		}
+
+		this.outputs[outputPin].listeners.push(listener);
 	}
 
 	process() {
@@ -40,12 +44,12 @@ export class Gate implements Chip {
 		}
 	}
 
-	setInput(input_idx: number, active: boolean): void {
-		if (input_idx >= this.inputs.length) {
+	setInput(inputPin: number, active: boolean): void {
+		if (inputPin >= this.inputs.length) {
 			throw new Error('Invalid input index!');
 		}
 
-		this.inputs[input_idx] = active;
+		this.inputs[inputPin] = active;
 		this.process();
 	}
 }
