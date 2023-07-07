@@ -11,7 +11,7 @@ describe('NOT chip conforms to NOT truth table', () => {
 	const testRow = (inputA: boolean, result: boolean) => {
 		const notChip = new NotGate();
 		const receiver = new NotGate();
-		notChip.outputs[0] = {listeners: [{gate: receiver, pin: 0}], state: false};
+		notChip.outputs[0] = {listeners: [{chip: receiver, pin: 0}], state: false};
 		notChip.setInput(0, inputA);
 		const output = receiver.inputs[0];
 		expect(output).toBe(result);

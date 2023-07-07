@@ -57,7 +57,7 @@ describe('Generic gate behavior', () => {
 		const inPin = 0;
 		const inputSpy = vi.spyOn(listener, 'setInput');
 
-		sender.outputs[outPin].listeners.push({gate: listener, pin: inPin});
+		sender.outputs[outPin].listeners.push({chip: listener, pin: inPin});
 
 		sender.setOutput(outPin, true);
 
@@ -66,8 +66,8 @@ describe('Generic gate behavior', () => {
 
 	test('addListener() adds listener to given IO pin', () => {
 		const sender = new Gate(0, 4);
-		const listener1 = {gate: new Gate(1, 0), pin: 0};
-		const listener2 = {gate: new Gate(3, 1), pin: 2};
+		const listener1 = {chip: new Gate(1, 0), pin: 0};
+		const listener2 = {chip: new Gate(3, 1), pin: 2};
 
 		expect(sender.outputs[0].listeners.length).toBe(0);
 		expect(sender.outputs[1].listeners.length).toBe(0);

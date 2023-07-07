@@ -13,7 +13,7 @@ describe('AND chip conforms to AND truth table', () => {
 	const testRow = (a: boolean, b: boolean, expected: boolean) => {
 		const and = new AndGate();
 		const receiver = new AndGate();
-		and.outputs[0] = {listeners: [{gate: receiver, pin: 0}], state: false};
+		and.outputs[0] = {listeners: [{chip: receiver, pin: 0}], state: false};
 		and.setInput(0, a);
 		and.setInput(1, b);
 		const output = receiver.inputs[0];
