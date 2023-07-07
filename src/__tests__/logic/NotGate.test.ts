@@ -1,5 +1,5 @@
 import {describe, expect, test} from 'vitest';
-import NotChip from '../../logic/NotChip';
+import {NotGate} from '../../logic/NotGate';
 
 describe('NOT chip conforms to NOT truth table', () => {
 	const truthTable = [
@@ -9,9 +9,9 @@ describe('NOT chip conforms to NOT truth table', () => {
 	];
 
 	const testRow = (inputA: boolean, result: boolean) => {
-		const notChip = new NotChip();
-		const receiver = new NotChip();
-		notChip.outputs[0] = {listeners: [{chip: receiver, pin: 0}], state: false};
+		const notChip = new NotGate();
+		const receiver = new NotGate();
+		notChip.outputs[0] = {listeners: [{gate: receiver, pin: 0}], state: false};
 		notChip.setInput(0, inputA);
 		const output = receiver.inputs[0];
 		expect(output).toBe(result);

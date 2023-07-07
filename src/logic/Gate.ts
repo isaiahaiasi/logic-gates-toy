@@ -1,14 +1,14 @@
-interface ChipPin {
-	chip: Chip;
+interface GatePin {
+	gate: Gate;
 	pin: number; // Chip I/O index
 }
 
 interface Output {
-	listeners: ChipPin[];
+	listeners: GatePin[];
 	state: boolean;
 }
 
-export default class Chip {
+export class Gate {
 	inputs: boolean[];
 	outputs: Output[];
 
@@ -19,7 +19,7 @@ export default class Chip {
 			.map(() => ({listeners: [], state: false}));
 	}
 
-	addListener(outputIdx: number, listener: ChipPin) {
+	addListener(outputIdx: number, listener: GatePin) {
 		this.outputs[outputIdx].listeners.push(listener);
 	}
 
@@ -47,7 +47,7 @@ export default class Chip {
 			return;
 		}
 
-		output.listeners.forEach(({chip, pin}) => {
+		output.listeners.forEach(({gate: chip, pin}) => {
 			chip.setInput(pin, active);
 		});
 	}

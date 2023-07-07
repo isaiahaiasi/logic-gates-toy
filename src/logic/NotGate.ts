@@ -1,6 +1,6 @@
-import NodeChip from './Chip';
+import {Gate} from './Gate';
 
-export default class NotChip extends NodeChip {
+export class NotGate extends Gate {
 	constructor() {
 		super(1, 1);
 	}
