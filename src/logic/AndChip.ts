@@ -1,4 +1,4 @@
-import NodeChip from './NodeChip';
+import NodeChip from './Chip';
 
 export default class AndChip extends NodeChip {
 	constructor() {

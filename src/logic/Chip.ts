@@ -1,11 +1,14 @@
-type NodeInput = [NodeChip, number]; // Number is the node's input index
+interface ChipPin {
+	chip: Chip;
+	pin: number; // Chip I/O index
+}
 
 interface Output {
-	nodeInputs: NodeInput[];
+	listeners: ChipPin[];
 	state: boolean;
 }
 
-export default class NodeChip {
+export default class Chip {
 	inputs: boolean[];
 	outputs: Output[];
 
@@ -13,13 +16,17 @@ export default class NodeChip {
 		this.inputs = new Array<boolean>(inputCnt).fill(false);
 		this.outputs = new Array<undefined>(outputCnt)
 			.fill(undefined)
-			.map(() => ({nodeInputs: [], state: false}));
+			.map(() => ({listeners: [], state: false}));
+	}
+
+	addListener(outputIdx: number, listener: ChipPin) {
+		this.outputs[outputIdx].listeners.push(listener);
 	}
 
 	process() {
 		// Stub method, to be extended
 		this.outputs.forEach((output, i) => {
-			if (!output.nodeInputs.length) {
+			if (output.listeners.length === 0) {
 				return;
 			}
 
@@ -34,12 +41,14 @@ export default class NodeChip {
 
 		const output = this.outputs[output_idx];
 
-		if (!output.nodeInputs.length) {
+		output.state = active;
+
+		if (output.listeners.length === 0) {
 			return;
 		}
 
-		output.nodeInputs.forEach(([node, inputIdx]) => {
-			node.setInput(inputIdx, active);
+		output.listeners.forEach(({chip, pin}) => {
+			chip.setInput(pin, active);
 		});
 	}
 
