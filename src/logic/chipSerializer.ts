@@ -9,6 +9,14 @@ import {type RelayGate} from './RelayGate';
 
 type PureChipConstructor = new () => Gate | ComplexChip;
 
+// The Chip Definitions use `IN` `OUT` to reference IO chips,
+// so the ComplexChip's IO relays must be present by those names
+interface LocalChipRefs {
+	[k: string]: Chip;
+	IN: RelayGate;
+	OUT: RelayGate;
+}
+
 export interface ChipDefinitionObject {
 	io: [number, number];
 	chips: Record<string, string>;
@@ -29,48 +37,44 @@ function mapObject<V, VR>(
 }
 
 export class ChipDeserializer {
-	#chipLib: Record<string, PureChipConstructor>;
+	// NOTE: Might want wrap this with an immutable getter to protect it.
+	chips: Record<string, PureChipConstructor>;
 
 	constructor(chipLib = {}) {
-		this.#chipLib = chipLib;
+		this.chips = chipLib;
 	}
 
 	deserializeChips<K extends string>(
 		defs: Record<K, ChipDefinitionObject>,
 	): Record<K, PureChipConstructor> {
-		// 1. Get list of chips
-		// NOTE: Currently, because constructors are not run at "compile" time,
-		// NOTE: there is no sorting based on dependencies (ie, if the definition of OR requires chipLib.NAND).
-		// NOTE: If this were to change, you would want to Topologically Sort chipNames
-		// NOTE: before generating the constructors.
+		// NOTE: Chips only need their dependent constructors to exist at *instantiation*
+		// NOTE: (because that's when the `chipGenerator` function runs),
+		// NOTE: so we can create all the constructors in whatever order
+		// NOTE: and **ASSUME** that all dependencies will be defined by then.
+		// NOTE: If we wanted/needed to actually verify the depency DAG (directed acyclic graph),
+		// NOTE: we would need to create a topological sorting.
 		const chipNames = Object.keys(defs) as K[];
 
-		// 2. Process each def in order,
-		//    adding the chip constructor to #chipLib if it's not already there.
 		return Object.fromEntries(chipNames.map(k => {
-			const Constructor = this.#chipFactory(defs[k]);
-
-			if (!(k in this.#chipLib)) {
-				this.#chipLib[k] = Constructor;
-			}
-
+			const Constructor = this.deserializeChip(k, defs[k]);
 			return [k, Constructor];
 		})) as Record<K, PureChipConstructor>;
 	}
 
 	deserializeChip(
+		name: string,
 		def: ChipDefinitionObject,
-	) {
-		const ChipConstructor = this.#chipFactory(def);
-		return new ChipConstructor();
-	}
+	): PureChipConstructor {
+		// Allow chips to be over-written.
+		if (name in this.chips) {
+			console.warn(`Chip ${name} already defined!`);
+		}
 
-	#chipFactory(def: ChipDefinitionObject) {
 		const chipGenerator = (_in: RelayGate, _out: RelayGate) => {
 			this.#chipGenerator(def, _in, _out);
 		};
 
-		return class GeneratedChip extends ComplexChip {
+		const ChipConstructor = class GeneratedChip extends ComplexChip {
 			constructor() {
 				super(
 					def.io[0],
@@ -79,24 +83,30 @@ export class ChipDeserializer {
 				);
 			}
 		};
+
+		this.chips[name] = ChipConstructor;
+
+		return ChipConstructor;
 	}
 
 	#chipGenerator(
 		def: ChipDefinitionObject,
 		IN: RelayGate,
 		OUT: RelayGate): void {
-		const chips: Record<string, Chip> = {
+		const chips: LocalChipRefs = {
 			IN,
 			OUT,
 			...mapObject(def.chips, ([id]) => {
 				let ChipConstructor;
 
+				// Get Constructor from GateLib key or local chips key,
+				// without TypeScript yelling about key types.
 				if (def.chips[id] in GateLib) {
 					const constructorId = def.chips[id] as keyof typeof GateLib;
 					ChipConstructor = GateLib[constructorId];
-				} else if (def.chips[id] in this.#chipLib) {
+				} else if (def.chips[id] in this.chips) {
 					const constructorId = def.chips[id];
-					ChipConstructor = this.#chipLib[constructorId];
+					ChipConstructor = this.chips[constructorId];
 				}
 
 				if (!ChipConstructor) {
