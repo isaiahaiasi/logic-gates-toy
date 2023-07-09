@@ -4,8 +4,6 @@ import {NotGate} from '../../logic/NotGate';
 import {ComplexChip} from '../../logic/ComplexChip';
 
 describe('ComplexCircuit processes circuit of gates and exposes result as output (NAND example)', () => {
-	// For stuff like this, maybe use composition to create a box around these instances
-	// & bind the inputs & outputs
 	const truthTable = [
 		// In1   In2    Output
 		[false, false, true],
