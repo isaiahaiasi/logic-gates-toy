@@ -9,7 +9,7 @@ interface ChipExample {
 	def: ChipDefinitionObject;
 }
 
-const chipExamples: Record<string, ChipExample> = {
+const chipExamples = {
 	nand: {
 		table: [
 			[0, 0, 1],
@@ -70,6 +70,27 @@ const chipExamples: Record<string, ChipExample> = {
 			],
 		},
 	},
+	nor: {
+		table: [
+			[0, 0, 1],
+			[0, 1, 0],
+			[1, 0, 0],
+			[1, 1, 0],
+		],
+		def: {
+			io: [2, 1],
+			chips: {
+				'nor-or': 'OR',
+				'nor-not': 'NOT',
+			},
+			edges: [
+				['IN', 0, 'nor-or', 0],
+				['IN', 1, 'nor-or', 1],
+				['nor-or', 0, 'nor-not', 0],
+				['nor-not', 0, 'OUT', 0],
+			],
+		},
+	},
 	or3: {
 		table: [
 			[0, 0, 0, 0],
@@ -96,7 +117,7 @@ const chipExamples: Record<string, ChipExample> = {
 			],
 		},
 	},
-};
+} satisfies Record<string, ChipExample>;
 
 describe('Chip de-serialization', () => {
 	test('overwrites chip with new definition', () => {
@@ -205,4 +226,123 @@ describe('Chip de-serialization', () => {
 			},
 		);
 	});
+});
+
+describe('handles NOR', () => {
+	test.each(chipExamples.nor.table)(
+		'%d ^|| %d -> %d',
+		(in1, in2, res) => {
+			const deserializer = new ChipDeserializer();
+			const {NOR} = deserializer.deserializeChips({
+				NOR: chipExamples.nor.def,
+				OR: chipExamples.or.def,
+				NAND: chipExamples.nand.def,
+			});
+
+			const nor = new NOR();
+
+			nor.setInput(0, Boolean(in1));
+			nor.setInput(1, Boolean(in2));
+			const output = nor.outputs[0].state;
+
+			expect(output).toBe(Boolean(res));
+		},
+	);
+});
+
+test('SR-Latch (no NOR)', () => {
+	// OR-NOT-AND Latch
+	const latchDef = {
+		io: [2, 1],
+		chips: {
+			o: 'OR',
+			n: 'NOT',
+			a: 'AND',
+		},
+		edges: [
+			['IN', 0, 'o', 1],
+			['IN', 1, 'n', 0],
+			['o', 0, 'a', 0],
+			['n', 0, 'a', 1],
+			['a', 0, 'o', 0],
+			['a', 0, 'OUT', 0],
+		],
+	} satisfies ChipDefinitionObject;
+
+	const deserializer = new ChipDeserializer();
+
+	const chips = deserializer.deserializeChips({
+		NAND: chipExamples.nand.def,
+		OR: chipExamples.or.def,
+		NOR: chipExamples.nor.def,
+		LATCH: latchDef,
+	});
+
+	const latch = new chips.LATCH();
+
+	// Setting "SET" (input 0) true outputs true
+	latch.setInput(0, true);
+	expect(latch.outputs[0].state).toBe(true);
+
+	// Latch remembers SET even when SET input is turned off
+	latch.setInput(0, false);
+	expect(latch.outputs[0].state).toBe(true);
+
+	// "Pressing" "RESET" (input 1) resets output to false
+	latch.setInput(1, true);
+	latch.setInput(1, false);
+	expect(latch.outputs[0].state).toBe(false);
+});
+
+// TODO: WHY DOES THE OTHER LATCH WORK BUT NOT THIS ONE???
+test('SR-Latch (NOR)', () => {
+	// Traditional latch
+	const latchDef = {
+		io: [2, 2],
+		chips: {
+			n1: 'NOR',
+			n2: 'NOR',
+		},
+		edges: [
+			['IN', 0, 'n1', 0],
+			['n1', 0, 'OUT', 0],
+			['n1', 0, 'n2', 0],
+			['n2', 0, 'OUT', 1],
+			['n2', 0, 'n1', 1],
+			['IN', 1, 'n2', 1],
+		],
+	} satisfies ChipDefinitionObject;
+
+	const deserializer = new ChipDeserializer();
+
+	const chips = deserializer.deserializeChips({
+		NAND: chipExamples.nand.def,
+		OR: chipExamples.or.def,
+		NOR: chipExamples.nor.def,
+		LATCH: latchDef,
+	});
+
+	const latch = new chips.LATCH();
+
+	// TODO: For some reason, the RESET input must be triggered to initialize this chip
+	// Otherwise, it's starts in an invalid state with both outputs FALSE
+	// (the outputs are Q & bar-Q)
+	latch.setInput(1, true);
+	latch.setInput(1, false);
+
+	// Setting "SET" (input 0) true outputs true
+	latch.setInput(0, true);
+	expect(latch.outputs[0].state).toBe(false);
+	expect(latch.outputs[1].state).toBe(true);
+
+	// Latch remembers SET even when SET input is turned off
+	latch.setInput(0, false);
+	expect(latch.outputs[0].state).toBe(false);
+	expect(latch.outputs[1].state).toBe(true);
+
+	// "Pressing" "RESET" (input 1) resets output to false
+	latch.setInput(1, true);
+	latch.setInput(1, false);
+	expect(latch.outputs[0].state).toBe(true);
+	expect(latch.outputs[1].state).toBe(false);
 });

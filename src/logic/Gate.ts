@@ -17,6 +17,7 @@ export class Gate implements Chip {
 		}
 
 		this.outputs[outputPin].listeners.push(listener);
+		this.process();
 	}
 
 	process() {
@@ -36,6 +37,10 @@ export class Gate implements Chip {
 		}
 
 		const output = this.outputs[output_idx];
+
+		if (output.state === active) {
+			return;
+		}
 
 		output.state = active;
 
