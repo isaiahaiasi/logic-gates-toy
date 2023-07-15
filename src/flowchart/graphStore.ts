@@ -74,7 +74,7 @@ function getGraphStoreHook(listeners?: GraphStoreListeners) {
 
 			throw new Error('Not Implemented Yet!');
 		},
-		updateNode(node) {
+		updateNode(_) {
 			throw new Error('Not Implemented Yet!');
 		},
 	}));
