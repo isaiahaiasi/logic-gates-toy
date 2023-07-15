@@ -24,8 +24,11 @@ const graphNodeStyle: React.CSSProperties = {
 export function GraphNode({node}: GraphNodeProps) {
 	const pickUpEdge = useUiStore(state => state.pickUpEdge);
 	const dropEdge = useUiStore(state => state.dropEdge);
-	const sourceNode = useUiStore(state => state.sourceNode);
 	const addEdge = useGraphStore(state => state.addEdge);
+
+	// TODO: Find a way to pull sourceNode out so graph doesn't re-render
+	//       every time an edge is picked up.
+	const sourceNode = useUiStore(state => state.sourceNode);
 
 	const handleClick: React.EventHandler<React.MouseEvent> = e => {
 		e.stopPropagation();

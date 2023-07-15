@@ -1,5 +1,4 @@
 import './App.css';
-import {EdgeDisplay} from './components/EdgeDisplay';
 import {GraphContainer} from './components/GraphContainer';
 import {NodeSelector} from './components/NodeSelector';
 import {UiStateInfo} from './components/UiStateInfo';
@@ -47,7 +46,6 @@ function App() {
 				<GraphContainer />
 			</div>
 			<UiStateInfo />
-			<EdgeDisplay />
 		</div>
 	);
 }

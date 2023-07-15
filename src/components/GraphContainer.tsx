@@ -1,7 +1,9 @@
-import {GraphDisplay} from './GraphDisplay';
+import {EdgeDisplay} from './EdgeDisplay';
+import {NodeDisplay} from './NodeDisplay';
 import {GraphInputReceiver} from './GraphInputReceiver';
 
 // TODO: Figure out how I want to handle styling.
+// (Will need to Search all `React.CSSProperties` for cleanup)
 const graphContainerStyle: React.CSSProperties = {
 	aspectRatio: '2/1',
 	width: '100%',
@@ -14,7 +16,8 @@ export function GraphContainer() {
 	return (
 		<div style={graphContainerStyle}>
 			<GraphInputReceiver />
-			<GraphDisplay />
+			<EdgeDisplay />
+			<NodeDisplay />
 		</div>
 	);
 }

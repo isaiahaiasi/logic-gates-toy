@@ -7,7 +7,7 @@ const style: React.CSSProperties = {
 	height: '100%',
 };
 
-export function GraphDisplay() {
+export function NodeDisplay() {
 	const nodes = useGraphStore(state => state.nodes);
 
 	return (
