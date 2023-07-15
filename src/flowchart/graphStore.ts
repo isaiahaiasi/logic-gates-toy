@@ -14,6 +14,7 @@ interface GraphStoreActions {
 	updateNode: (node: Node) => void;
 }
 
+// TODO: If these aren't going to be used, remove them.
 interface GraphStoreListeners {
 	onAddNode?(node: Node): void;
 	onRemoveNode?(id: NodeId): void;
@@ -21,6 +22,14 @@ interface GraphStoreListeners {
 	onRemoveEdge?(id: EdgeId): void;
 }
 
+// TODO: Add tests to ensure validity of graph is preserved
+// - Adding a node should actually add a node.
+// - Adding an edge should actually add an edge.
+// - Should not be able to add a "redundant" edge.
+// - Removing a node should remove all associated edges.
+// - Removing a node should remove all of its child nodes.
+// - Edges must have two *existing* nodes.
+// - A node must have either no parent, or an *existing* parent.
 // NOTE: Not sure this is actually a good idea.
 // The thought process is, I don't really want the Graph UI state
 // to be the source-of-truth for my Circuit state. This method lets me provide
@@ -36,8 +45,6 @@ function getGraphStoreHook(listeners?: GraphStoreListeners) {
 
 			set(state => ({
 				nodes: [...state.nodes, node],
-				edges: state.edges
-					.filter(edge => edge.source !== node.id && edge.target !== node.id),
 			}),
 			);
 		},
@@ -46,14 +53,19 @@ function getGraphStoreHook(listeners?: GraphStoreListeners) {
 				listeners.onRemoveNode(id);
 			}
 
-			throw new Error('Not Implemented Yet!');
+			set(state => ({
+				nodes: state.nodes.filter(node => node.id !== id),
+				edges: state.edges
+					.filter(edge => edge.source !== id && edge.target !== id),
+			}),
+			);
 		},
 		addEdge(edge) {
 			if (listeners?.onAddEdge) {
 				listeners.onAddEdge(edge);
 			}
 
-			throw new Error('Not Implemented Yet!');
+			set(state => ({edges: [...state.edges, edge]}));
 		},
 		removeEdge(id) {
 			if (listeners?.onRemoveEdge) {

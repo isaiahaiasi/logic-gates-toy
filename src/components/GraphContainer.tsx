@@ -8,7 +8,7 @@ import {GraphNode} from './GraphNode';
 
 // TODO: Figure out how I want to handle styling.
 const graphContainerStyle: React.CSSProperties = {
-	aspectRatio: '1/1',
+	aspectRatio: '2/1',
 	width: '100%',
 	height: '100%',
 	background: 'lightgrey',

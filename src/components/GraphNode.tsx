@@ -1,4 +1,6 @@
 import {type Node} from '../flowchart/graph';
+import {useGraphStore} from '../flowchart/graphStore';
+import {useUiStore} from '../state_management/uiStore';
 
 interface GraphNodeProps {
 	node: Node;
@@ -20,9 +22,28 @@ const graphNodeStyle: React.CSSProperties = {
 };
 
 export function GraphNode({node}: GraphNodeProps) {
+	const pickUpEdge = useUiStore(state => state.pickUpEdge);
+	const dropEdge = useUiStore(state => state.dropEdge);
+	const sourceNode = useUiStore(state => state.sourceNode);
+	const addEdge = useGraphStore(state => state.addEdge);
+
 	const handleClick: React.EventHandler<React.MouseEvent> = e => {
 		e.stopPropagation();
-		console.log(`node clicked: ${node.id}`);
+		if (sourceNode === node.id) {
+			return;
+		}
+
+		if (sourceNode) {
+			addEdge({
+				id: Date.now(),
+				source: sourceNode,
+				target: node.id,
+			});
+
+			dropEdge();
+		} else {
+			pickUpEdge(node.id);
+		}
 	};
 
 	const localStyle: React.CSSProperties = {
