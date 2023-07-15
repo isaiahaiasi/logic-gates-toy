@@ -3,6 +3,7 @@
 
 import {type Vec2} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
+import {useUiStore} from '../state_management/uiStore';
 import {GraphNode} from './GraphNode';
 
 // TODO: Figure out how I want to handle styling.
@@ -30,18 +31,22 @@ export function GraphContainer() {
 	const nodes = useGraphStore(state => state.nodes);
 	const addNode = useGraphStore(state => state.addNode);
 
+	// TODO: `currentlyHeldNode` shouldn't force a re-render of the entire graph
+	// So this should be moved to a sibling of the NodeRenderer
+	const heldNodeTemplate = useUiStore(state => state.heldNodeTemplate);
+
 	const handleClick: React.EventHandler<React.MouseEvent> = e => {
-		const position = getPosition(
+		if (!heldNodeTemplate) {
+			return;
+		}
+
+		const spawnPosition = getPosition(
 			e.clientX,
 			e.clientY,
 			e.currentTarget.getBoundingClientRect(),
 		);
 
-		addNode({
-			position,
-			id: Date.now().toString(),
-			data: {label: `${Math.round(position.x * 100)}, ${Math.round(position.y * 100)}`},
-		});
+		addNode(heldNodeTemplate.templateFn({spawnPosition}));
 	};
 
 	return (
