@@ -28,14 +28,13 @@ describe('NodeSelector', () => {
 		).toBeInTheDocument();
 	});
 
-	test.todo('"toggled" state of button should be represented by `aria-pressed` attribute', async () => {
+	test('"toggled" state of button should be represented by `aria-pressed` attribute', async () => {
 		const user = userEvent.setup();
 
 		renderNodeListItem();
 
 		expect(await screen.findByRole('button', {name: `select node ${nodeTemplate.label}`, pressed: false})).toBeInTheDocument();
 
-		// Hook error???
 		await user.click(await screen.findByRole('button'));
 
 		expect(await screen.findByRole('button', {name: `select node ${nodeTemplate.label}`, pressed: true})).toBeInTheDocument();

@@ -35,7 +35,7 @@ interface GraphStoreListeners {
 // to be the source-of-truth for my Circuit state. This method lets me provide
 // listeners to inform the Circuit when changes have been made thru the UI.
 function getGraphStoreHook(listeners?: GraphStoreListeners) {
-	return create<GraphStoreState & GraphStoreActions>(set => ({
+	return create<GraphStoreState & GraphStoreActions>()(set => ({
 		nodes: [],
 		edges: [],
 		addNode(node) {

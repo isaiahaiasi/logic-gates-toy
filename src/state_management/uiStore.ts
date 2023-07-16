@@ -45,7 +45,7 @@ interface UiActions {
 // - heldNodeTemplate must be set **IFF** currentAction is ADDING_NODE
 // - sourceNode must be set **IFF** currentAction is ADDING_EDGE
 // - (that "and only if" means I need to test non-obvious paths thru State Machine graph)
-export const useUiStore = create<UiState & UiActions>(set => ({
+export const useUiStore = create<UiState & UiActions>()(set => ({
 	currentAction: 'NONE',
 	heldNodeTemplate: undefined,
 	sourceNode: undefined,
