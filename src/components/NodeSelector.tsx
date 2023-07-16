@@ -7,10 +7,14 @@ interface NodeSelectorProps {
 	nodeTemplates: NodeTemplate[];
 }
 
-// NOTE: Probably nice to *keep* this a "presentational" component.
+const style: React.CSSProperties = {
+	display: 'flex',
+	flexDirection: 'column',
+};
+
 export function NodeSelector({nodeTemplates}: NodeSelectorProps) {
 	return (
-		<div>
+		<div style={style}>
 			{nodeTemplates.map(template => (
 				<GraphNodeListItem template={template} key={template.label} />
 			))}

@@ -4,10 +4,17 @@ interface GraphNodeListItemProps {
 	template: NodeTemplate;
 }
 
+const activeStyle: React.CSSProperties = {
+	backgroundColor: '#59787e',
+};
+
 export function GraphNodeListItem({template}: GraphNodeListItemProps) {
 	const pickUpNode = useUiStore(state => state.pickUpNodeTemplate);
 	const dropNode = useUiStore(state => state.dropNodeTemplate);
 	const currentlyHeldNode = useUiStore(state => state.heldNodeTemplate);
+
+	// TODO: Not sure how to SEMANTICALLY represent "currently selected" state.
+	const isSelected = currentlyHeldNode?.label === template.label;
 
 	const handleClick = () => {
 		// NOTE: Might need a better way to identify "sameness"...
@@ -20,8 +27,15 @@ export function GraphNodeListItem({template}: GraphNodeListItemProps) {
 	};
 
 	return (
-		<div className='node-template-item' onClick={handleClick}>
+		<button
+			className='node-template-item'
+			onClick={handleClick}
+			type='button'
+			aria-label={`select node ${template.label}`}
+			aria-pressed={isSelected}
+			style={isSelected ? activeStyle : {}}
+		>
 			{template.label}
-		</div>
+		</button>
 	);
 }

@@ -20,14 +20,19 @@
 		"strict": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"noFallthroughCasesInSwitch": true
+		"noFallthroughCasesInSwitch": true,
+		"types": [
+			"@testing-library/jest-dom"
+		]
 	},
 	"include": [
 		"src",
+		"vitest-setup.ts",
+		"__mocks__",
 	],
 	"references": [
 		{
 			"path": "./tsconfig.node.json"
 		}
-	]
+	],
 }
