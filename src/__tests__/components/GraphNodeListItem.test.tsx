@@ -38,6 +38,10 @@ describe('NodeSelector', () => {
 		await user.click(await screen.findByRole('button'));
 
 		expect(await screen.findByRole('button', {name: `select node ${nodeTemplate.label}`, pressed: true})).toBeInTheDocument();
+
+		await user.click(await screen.findByRole('button'));
+
+		expect(await screen.findByRole('button', {name: `select node ${nodeTemplate.label}`, pressed: false})).toBeInTheDocument();
 	});
 });
 

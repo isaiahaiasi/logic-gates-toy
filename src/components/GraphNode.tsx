@@ -11,7 +11,6 @@ interface GraphNodeProps {
 const nodeHeight = 1.25; // `rem`
 const nodeWidth = 5; // `rem`
 
-// TODO: Figure out how I want to handle styling.
 const graphNodeStyle: React.CSSProperties = {
 	position: 'absolute',
 	width: `${nodeWidth}rem`,
@@ -21,6 +20,10 @@ const graphNodeStyle: React.CSSProperties = {
 	borderRadius: '100px',
 };
 
+const graphNodeActiveStyle: React.CSSProperties = {
+	background: '#59787e',
+};
+
 export function GraphNode({node}: GraphNodeProps) {
 	const pickUpEdge = useUiStore(state => state.pickUpEdge);
 	const dropEdge = useUiStore(state => state.dropEdge);
@@ -28,18 +31,21 @@ export function GraphNode({node}: GraphNodeProps) {
 
 	// TODO: Find a way to pull sourceNode out so graph doesn't re-render
 	//       every time an edge is picked up.
-	const sourceNode = useUiStore(state => state.sourceNode);
+	const heldEdgeSourceNode = useUiStore(state => state.sourceNode);
+
+	const isDrawingEdgeFromThis = heldEdgeSourceNode === node.id;
+	const activeStyle = isDrawingEdgeFromThis ? graphNodeActiveStyle : {};
 
 	const handleClick: React.EventHandler<React.MouseEvent> = e => {
 		e.stopPropagation();
-		if (sourceNode === node.id) {
+		if (isDrawingEdgeFromThis) {
 			return;
 		}
 
-		if (sourceNode) {
+		if (heldEdgeSourceNode) {
 			addEdge({
 				id: Date.now(),
-				source: sourceNode,
+				source: heldEdgeSourceNode,
 				target: node.id,
 			});
 
@@ -56,7 +62,11 @@ export function GraphNode({node}: GraphNodeProps) {
 
 	return (
 		<div
-			style={{...graphNodeStyle, ...localStyle}}
+			style={{
+				...graphNodeStyle,
+				...localStyle,
+				...activeStyle,
+			}}
 			onClick={handleClick}
 		>
 			{node.data.label}

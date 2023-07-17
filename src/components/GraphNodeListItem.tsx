@@ -13,7 +13,7 @@ export function GraphNodeListItem({template}: GraphNodeListItemProps) {
 	const dropNode = useUiStore(state => state.dropNodeTemplate);
 	const currentlyHeldNode = useUiStore(state => state.heldNodeTemplate);
 
-	// TODO: Not sure how to SEMANTICALLY represent "currently selected" state.
+	// NOTE: Not sure how to SEMANTICALLY represent "currently selected" state.
 	const isSelected = currentlyHeldNode?.label === template.label;
 
 	const handleClick = () => {

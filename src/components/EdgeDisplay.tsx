@@ -9,17 +9,6 @@ const containerStyle: React.CSSProperties = {
 	pointerEvents: 'none',
 };
 
-const debugStyle: React.CSSProperties = {
-	position: 'absolute',
-	top: '0.2rem',
-	right: '0.2rem',
-	color: 'grey',
-	display: 'flex',
-	flexDirection: 'column',
-	justifyContent: 'end',
-	alignItems: 'end',
-};
-
 export function EdgeDisplay() {
 	const edges = useGraphStore(state => state.edges);
 	const nodes = useGraphStore(state => state.nodes);
@@ -71,12 +60,31 @@ interface GraphDisplayDebugProps {
 	edges: Edge[];
 }
 
+const debugWrapperStyle: React.CSSProperties = {
+	position: 'absolute',
+	inset: 0,
+	color: 'grey',
+	height: '100%',
+	overflowY: 'scroll',
+};
+
+const debugStyle: React.CSSProperties = {
+	position: 'relative',
+	inset: 0,
+	display: 'flex',
+	flexDirection: 'column',
+	justifyContent: 'end',
+	alignItems: 'end',
+};
+
 function EdgeDisplayDebug({edges}: GraphDisplayDebugProps) {
 	return (
-		<div style={debugStyle}>
-			{edges.map(edge =>
-				<div key={edge.id}>{edge.source} &rarr; {edge.target}</div>,
-			)}
+		<div style={debugWrapperStyle}>
+			<div style={debugStyle}>
+				{edges.map(edge =>
+					<div key={edge.id}>{edge.source} &rarr; {edge.target}</div>,
+				)}
+			</div>
 		</div>
 	);
 }
