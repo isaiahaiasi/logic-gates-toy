@@ -8,6 +8,7 @@ const nodeTemplate: NodeTemplate = {
 	templateFn: info => ({
 		id: `AND:${Date.now()}`,
 		position: info.spawnPosition,
+		size: 3,
 		data: {
 			label: `A:${Math.round(info.spawnPosition.x * 100)}|${Math.round(info.spawnPosition.y * 100)}`,
 		},

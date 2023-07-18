@@ -9,6 +9,7 @@ export type EdgeId = string | number;
 export interface Node {
 	id: NodeId;
 	position: Vec2;
+	size: number | Vec2;
 
 	// NOTE: Should things associated with chips should be"
 	// NOTE: - embedded, making Node generic (Node<T>) (and Zustand management nested generic...)

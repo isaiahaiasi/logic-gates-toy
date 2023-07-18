@@ -8,20 +8,15 @@ interface GraphNodeProps {
 
 // These are tracked externally as numbers so that we can do math operations.
 // Specifically: find the middle so they spawn in CENTERED ON click position.
-const nodeHeight = 1.25; // `rem`
-const nodeWidth = 5; // `rem`
 
 const graphNodeStyle: React.CSSProperties = {
 	position: 'absolute',
-	width: `${nodeWidth}rem`,
-	height: `${nodeHeight}rem`,
 	userSelect: 'none',
 	background: 'grey',
 	borderRadius: '100px',
-};
-
-const graphNodeActiveStyle: React.CSSProperties = {
-	background: '#59787e',
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
 };
 
 export function GraphNode({node}: GraphNodeProps) {
@@ -34,7 +29,17 @@ export function GraphNode({node}: GraphNodeProps) {
 	const heldEdgeSourceNode = useUiStore(state => state.sourceNode);
 
 	const isDrawingEdgeFromThis = heldEdgeSourceNode === node.id;
-	const activeStyle = isDrawingEdgeFromThis ? graphNodeActiveStyle : {};
+
+	const width = typeof node.size === 'number' ? node.size : node.size.x;
+	const height = typeof node.size === 'number' ? node.size : node.size.y;
+
+	const localStyle: React.CSSProperties = {
+		background: isDrawingEdgeFromThis ? '#59787e' : 'grey',
+		width: `${width}rem`,
+		height: `${height}rem`,
+		top: `calc(${node.position.y * 100}% - ${height / 2}rem)`,
+		left: `calc(${node.position.x * 100}% - ${width / 2}rem)`,
+	};
 
 	const handleClick: React.EventHandler<React.MouseEvent> = e => {
 		e.stopPropagation();
@@ -55,17 +60,11 @@ export function GraphNode({node}: GraphNodeProps) {
 		}
 	};
 
-	const localStyle: React.CSSProperties = {
-		top: `calc(${node.position.y * 100}% - ${nodeHeight / 2}rem)`,
-		left: `calc(${node.position.x * 100}% - ${nodeWidth / 2}rem)`,
-	};
-
 	return (
 		<div
 			style={{
 				...graphNodeStyle,
 				...localStyle,
-				...activeStyle,
 			}}
 			onClick={handleClick}
 		>
