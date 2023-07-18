@@ -40,12 +40,26 @@ export const useGraphStore = create<GraphStoreState & GraphStoreActions>()(set =
 		);
 	},
 	addEdge(edge) {
-		set(state => ({edges: [...state.edges, edge]}));
+		set(state => {
+			// Despite `source` & `target`, we're treating this as an
+			// __UNDIRECTED__ graph for the purposes of edge duplication testing.
+			// (AKA, A->B == B->A)
+			const undirectedEdgeExists = state.edges.some(e =>
+				(e.source === edge.source && e.target === edge.target)
+				|| (e.source === edge.target && e.target === edge.source),
+			);
+
+			if (undirectedEdgeExists) {
+				return {};
+			}
+
+			return {edges: [...state.edges, edge]};
+		});
 	},
-	removeEdge(id) {
+	removeEdge(_id) {
 		throw new Error('Not Implemented Yet!');
 	},
-	updateNode(node) {
+	updateNode(_node) {
 		throw new Error('Not Implemented Yet!');
 	},
 }));
