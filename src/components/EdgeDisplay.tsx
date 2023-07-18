@@ -1,5 +1,5 @@
 import {useLayoutEffect, useRef, useState} from 'react';
-import {type NodeId, type Edge} from '../flowchart/graph';
+import {type NodeId, type Edge, type EdgeId} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
 
 const containerStyle: React.CSSProperties = {
@@ -12,6 +12,7 @@ const containerStyle: React.CSSProperties = {
 export function EdgeDisplay() {
 	const edges = useGraphStore(state => state.edges);
 	const nodes = useGraphStore(state => state.nodes);
+	const removeEdge = useGraphStore(state => state.removeEdge);
 
 	const ref = useRef<SVGSVGElement>(null);
 	const [svgHeight, setSvgHeight] = useState(0);
@@ -26,6 +27,10 @@ export function EdgeDisplay() {
 		setSvgHeight(height);
 		setSvgWidth(width);
 	}, []);
+
+	const deleteEdge = (edgeId: EdgeId) => {
+		removeEdge(edgeId);
+	};
 
 	const getNode = (nodeId: NodeId) => nodes.find(node => node.id === nodeId);
 
@@ -42,7 +47,12 @@ export function EdgeDisplay() {
 					const targetNode = getNode(edge.target);
 					return (
 						<line
+							onClick={() => {
+								deleteEdge(edge.id);
+							}}
+							style={{pointerEvents: 'all'}}
 							key={edge.id}
+							strokeWidth={2}
 							x1={(sourceNode?.position.x ?? 0) * svgWidth}
 							y1={(sourceNode?.position.y ?? 0) * svgHeight}
 							x2={(targetNode?.position.x ?? 0) * svgWidth}

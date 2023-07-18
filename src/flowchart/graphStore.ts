@@ -56,8 +56,8 @@ export const useGraphStore = create<GraphStoreState & GraphStoreActions>()(set =
 			return {edges: [...state.edges, edge]};
 		});
 	},
-	removeEdge(_id) {
-		throw new Error('Not Implemented Yet!');
+	removeEdge(id) {
+		set(state => ({edges: state.edges.filter(edge => edge.id !== id)}));
 	},
 	updateNode(_node) {
 		throw new Error('Not Implemented Yet!');
