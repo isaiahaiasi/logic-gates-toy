@@ -1,6 +1,6 @@
-import {useLayoutEffect, useRef, useState} from 'react';
 import {type NodeId, type Edge, type EdgeId} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
+import {useClientRect} from '../hooks/useClientRect';
 
 const containerStyle: React.CSSProperties = {
 	position: 'absolute',
@@ -14,19 +14,7 @@ export function EdgeDisplay() {
 	const nodes = useGraphStore(state => state.nodes);
 	const removeEdge = useGraphStore(state => state.removeEdge);
 
-	const ref = useRef<SVGSVGElement>(null);
-	const [svgHeight, setSvgHeight] = useState(0);
-	const [svgWidth, setSvgWidth] = useState(0);
-
-	useLayoutEffect(() => {
-		if (!ref.current) {
-			return;
-		}
-
-		const {height, width} = ref.current.getBoundingClientRect();
-		setSvgHeight(height);
-		setSvgWidth(width);
-	}, []);
+	const {clientRef, clientRect} = useClientRect<SVGSVGElement>();
 
 	const deleteEdge = (edgeId: EdgeId) => {
 		removeEdge(edgeId);
@@ -40,7 +28,7 @@ export function EdgeDisplay() {
 				width='100%'
 				height='100%'
 				stroke='black'
-				ref={ref}
+				ref={clientRef}
 			>
 				{edges.map(edge => {
 					const sourceNode = getNode(edge.source);
@@ -50,13 +38,13 @@ export function EdgeDisplay() {
 							onClick={() => {
 								deleteEdge(edge.id);
 							}}
+							x1={(sourceNode?.position.x ?? 0) * clientRect.width}
+							y1={(sourceNode?.position.y ?? 0) * clientRect.height}
+							x2={(targetNode?.position.x ?? 0) * clientRect.width}
+							y2={(targetNode?.position.y ?? 0) * clientRect.height}
+							strokeWidth={2}
 							style={{pointerEvents: 'all'}}
 							key={edge.id}
-							strokeWidth={2}
-							x1={(sourceNode?.position.x ?? 0) * svgWidth}
-							y1={(sourceNode?.position.y ?? 0) * svgHeight}
-							x2={(targetNode?.position.x ?? 0) * svgWidth}
-							y2={(targetNode?.position.y ?? 0) * svgHeight}
 						/>
 					);
 				})}
