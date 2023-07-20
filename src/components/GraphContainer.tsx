@@ -1,6 +1,7 @@
-import {EdgeDisplay} from './EdgeDisplay';
 import {NodeDisplay} from './NodeDisplay';
 import {GraphInputReceiver} from './GraphInputReceiver';
+import {SvgGraph} from './SvgGraph';
+import {SvgGraphEdges} from './SvgGraphEdges';
 
 // TODO: Figure out how I want to handle styling.
 // (Will need to Search all `React.CSSProperties` for cleanup)
@@ -16,7 +17,9 @@ export function GraphContainer() {
 	return (
 		<div style={graphContainerStyle}>
 			<GraphInputReceiver />
-			<EdgeDisplay />
+			<SvgGraph>
+				<SvgGraphEdges />
+			</SvgGraph>
 			<NodeDisplay />
 		</div>
 	);
