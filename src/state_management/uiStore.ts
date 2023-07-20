@@ -15,6 +15,7 @@ export interface NodeTemplate {
 type UiPersistentAction =
 	'ADDING_NODE' |
 	'ADDING_EDGE' |
+	'REMOVING_EDGE' |
 	'NONE';
 
 interface UiState {
@@ -32,6 +33,8 @@ interface UiState {
 
 	/** If ADDING_EDGE, the ID for the partial edge's "source" node. */
 	sourceNode?: NodeId;
+
+	edgeSliceStart?: Vec2;
 }
 
 interface UiActions {
@@ -39,16 +42,19 @@ interface UiActions {
 	dropNodeTemplate: () => void;
 	pickUpEdge: (sourceId: NodeId) => void;
 	dropEdge: () => void;
+	sliceEdge: (pos: Vec2) => void;
 }
 
 // TODO: Write tests that guarantee invalid state is impossible
-// - heldNodeTemplate must be set **IFF** currentAction is ADDING_NODE
-// - sourceNode must be set **IFF** currentAction is ADDING_EDGE
+// - heldNodeTemplate must be set **IFF** currentAction ADDING_NODE
+// - sourceNode must be set **IFF** currentAction ADDING_EDGE
+// - edgeSliceStart must be set **IFF** currentAction REMOVING_EDGE
 // - (that "and only if" means I need to test non-obvious paths thru State Machine graph)
 export const useUiStore = create<UiState & UiActions>()(set => ({
 	currentAction: 'NONE',
 	heldNodeTemplate: undefined,
 	sourceNode: undefined,
+	edgeSliceStart: undefined,
 	pickUpNodeTemplate(template) {
 		set(_ => ({
 			currentAction: 'ADDING_NODE',
@@ -67,6 +73,7 @@ export const useUiStore = create<UiState & UiActions>()(set => ({
 			currentAction: 'ADDING_EDGE',
 			sourceNode: sourceId,
 			heldNodeTemplate: undefined,
+			edgeSliceStart: undefined,
 		}));
 	},
 	dropEdge() {
@@ -74,5 +81,28 @@ export const useUiStore = create<UiState & UiActions>()(set => ({
 			currentAction: 'NONE',
 			sourceNode: undefined,
 		}));
+	},
+	// NOTE: Not sure it actually makes sense to handle these two states under one Action.
+	sliceEdge(pos: Vec2) {
+		set(state => {
+			if (state.currentAction === 'NONE') {
+				// Begin slice
+				return {
+					currentAction: 'REMOVING_EDGE',
+					edgeSliceStart: pos,
+				};
+			}
+
+			if (state.currentAction === 'REMOVING_EDGE') {
+				// Finish slice
+				return {
+					currentAction: 'NONE',
+					edgeSliceStart: undefined,
+				};
+			}
+
+			console.error(`Cannot slice edge while currentAction is ${state.currentAction}!`);
+			return {};
+		});
 	},
 }));
