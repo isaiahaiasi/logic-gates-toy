@@ -1,5 +1,5 @@
 import './App.css';
-import {DebugInfo} from './components/DebugInfo';
+import {DebugInfo} from './components/debug/DebugInfo';
 import {GraphContainer} from './components/GraphContainer';
 import {NodeSelector} from './components/NodeSelector';
 

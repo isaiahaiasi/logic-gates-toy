@@ -1,7 +1,7 @@
 import {NodeDisplay} from './NodeDisplay';
 import {GraphInputReceiver} from './GraphInputReceiver';
-import {SvgGraph} from './SvgGraph';
-import {SvgGraphEdges} from './SvgGraphEdges';
+import {SvgGraph} from './svg/SvgGraph';
+import {SvgGraphEdges} from './svg/SvgGraphEdges';
 
 // TODO: Figure out how I want to handle styling.
 // (Will need to Search all `React.CSSProperties` for cleanup)

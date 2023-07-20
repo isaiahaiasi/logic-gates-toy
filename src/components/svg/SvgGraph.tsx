@@ -1,6 +1,6 @@
 import {useMemo, type PropsWithChildren} from 'react';
-import {useClientRect} from '../hooks/useClientRect';
-import {GraphSvgContext, type GraphSvgContextType} from '../state_management/clientRectContext';
+import {useClientRect} from '../../hooks/useClientRect';
+import {GraphSvgContext, type GraphSvgContextType} from '../../state_management/clientRectContext';
 
 const containerStyle: React.CSSProperties = {
 	position: 'absolute',

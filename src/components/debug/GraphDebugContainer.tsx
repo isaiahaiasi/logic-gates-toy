@@ -1,4 +1,4 @@
-import {useGraphStore} from '../flowchart/graphStore';
+import {useGraphStore} from '../../flowchart/graphStore';
 import {GraphEdgesDebug} from './GraphEdgesDebug';
 
 export function GraphDebugContainer() {

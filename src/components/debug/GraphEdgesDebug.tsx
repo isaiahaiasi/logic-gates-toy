@@ -1,4 +1,4 @@
-import {type Edge} from '../flowchart/graph';
+import {type Edge} from '../../flowchart/graph';
 
 interface GraphDisplayDebugProps {
 	edges: Edge[];

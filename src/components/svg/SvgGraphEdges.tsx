@@ -1,7 +1,7 @@
 import {useContext} from 'react';
-import {GraphSvgContext} from '../state_management/clientRectContext';
-import {useGraphStore} from '../flowchart/graphStore';
-import {type EdgeId, type NodeId} from '../flowchart/graph';
+import {GraphSvgContext} from '../../state_management/clientRectContext';
+import {useGraphStore} from '../../flowchart/graphStore';
+import {type EdgeId, type NodeId} from '../../flowchart/graph';
 
 export function SvgGraphEdges() {
 	const {rect} = useContext(GraphSvgContext);
