@@ -12,7 +12,7 @@ export interface NodeTemplate {
 
 // NOTE: Not sure on "persistent" word choice.
 /** Each exclusive option of the underlying UI State Machine */
-type UiPersistentAction =
+export type UiPersistentAction =
 	'ADDING_NODE' |
 	'ADDING_EDGE' |
 	'REMOVING_EDGE' |
