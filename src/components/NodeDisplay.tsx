@@ -12,7 +12,7 @@ export function NodeDisplay() {
 
 	return (
 		<div style={style}>
-			{nodes.map(node => <GraphNode node={node} key={node.id} />)}
+			{Object.values(nodes).map(node => <GraphNode node={node} key={node.id} />)}
 		</div>
 	);
 }

@@ -1,20 +1,16 @@
 import {useContext} from 'react';
 import {GraphSvgContext} from '../../state_management/clientRectContext';
 import {useGraphStore} from '../../flowchart/graphStore';
-import {type NodeId} from '../../flowchart/graph';
 
 export function SvgGraphEdges() {
 	const {rect} = useContext(GraphSvgContext);
 	const edges = useGraphStore(state => state.edges);
 	const nodes = useGraphStore(state => state.nodes);
 
-	// TODO: Stop iterating twice over the node array for every edge.
-	const getNode = (nodeId: NodeId) => nodes.find(node => node.id === nodeId);
-
 	return (
 		<>{edges.map(edge => {
-			const sourceNode = getNode(edge.source);
-			const targetNode = getNode(edge.target);
+			const sourceNode = nodes[edge.source];
+			const targetNode = nodes[edge.target];
 
 			return (
 				<line

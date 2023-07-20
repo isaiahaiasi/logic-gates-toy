@@ -1,4 +1,4 @@
-import {useContext, useMemo} from 'react';
+import {useContext} from 'react';
 import {useMouseMove} from '../../hooks/useMouseMove';
 import {useUiStore} from '../../state_management/uiStore';
 import {GraphSvgContext} from '../../state_management/clientRectContext';
@@ -55,13 +55,8 @@ function SvgEdgePreview({mousePos}: SvgMouseLinePreviewProps) {
 		throw new Error('Invalid UI State in SvgEdgePreview: no current sourceNode!');
 	}
 
-	// TODO: Fix
 	const nodes = useGraphStore(state => state.nodes);
-	// Avoid iterating over nodes for every mousemove event!
-	const node = useMemo(
-		() => nodes.find(node => node.id === sourceNodeId),
-		[nodes],
-	);
+	const node = nodes[sourceNodeId];
 
 	if (!node) {
 		throw new Error(`Could not find node with id ${sourceNodeId ?? '<undefined>'}!`);

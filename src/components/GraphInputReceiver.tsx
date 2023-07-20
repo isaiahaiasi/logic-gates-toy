@@ -1,27 +1,17 @@
 
-import {type NodeId, type Vec2} from '../flowchart/graph';
+import {type Vec2} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
 import {useClientRect} from '../hooks/useClientRect';
 import {useUiStore} from '../state_management/uiStore';
 import {doLinesIntersect} from '../utils/doLinesIntersect';
 
-// TODO: Figure out how I want to handle styling.
 const style: React.CSSProperties = {
 	position: 'absolute',
 	inset: 0,
 };
 
-function getPosition(
-	mouseX: number,
-	mouseY: number,
-	boundingClientRect: DOMRect,
-): Vec2 {
-	const {top, left, width, height} = boundingClientRect;
-	return {
-		x: (mouseX - left) / width,
-		y: (mouseY - top) / height,
-	};
-}
+// TODO: Instead of a mega-component that breaks Single Responsibility Principle,
+//       how about conditionally render sub-components for each UI Action?
 
 /**
  * Empty div that occupies the space of the graph & receives inputs.
@@ -34,7 +24,8 @@ export function GraphInputReceiver() {
 	const addNode = useGraphStore(state => state.addNode);
 	const edges = useGraphStore(state => state.edges);
 	const nodes = useGraphStore(state => state.nodes);
-	// TODO: probably want to be able to call this with more than one edge.
+
+	// NOTE: probably want to be able to call this with more than one edge.
 	const removeEdge = useGraphStore(state => state.removeEdge);
 
 	const currentAction = useUiStore(state => state.currentAction);
@@ -44,26 +35,26 @@ export function GraphInputReceiver() {
 	const dropEdge = useUiStore(state => state.dropEdge);
 
 	const getIntersectingEdgeIds = (sliceStart: Vec2, sliceEnd: Vec2) => {
-		// TODO: This is truly ridiculous...
-		const getNode = (id: NodeId) => nodes.find(node => node.id === id);
-		const scaleVecToClient = (pos: Vec2): Vec2 => ({
-			x: pos.x * clientRect.width,
-			y: pos.y * clientRect.height,
-		});
-
 		const intersectingEdges = edges.filter(edge => {
-			const source = getNode(edge.source);
-			const target = getNode(edge.target);
+			const source = nodes[edge.source];
+			const target = nodes[edge.target];
 
 			if (!source || !target) {
+				console.error(`Could not find node with id ${source ? edge.target : edge.source}`);
 				return false;
 			}
 
 			return doLinesIntersect(
 				sliceStart,
 				sliceEnd,
-				scaleVecToClient(source.position),
-				scaleVecToClient(target.position),
+				{
+					x: source.position.x * clientRect.width,
+					y: source.position.y * clientRect.height,
+				},
+				{
+					x: target.position.x * clientRect.width,
+					y: target.position.y * clientRect.height,
+				},
 			);
 		});
 
@@ -71,7 +62,6 @@ export function GraphInputReceiver() {
 	};
 
 	const handleClick = (e: React.MouseEvent) => {
-		// NOTE: Find a better strategy than "giant unwieldy switch"?
 		switch (currentAction) {
 			case 'NONE': {
 				// Begin edge slice
@@ -97,8 +87,6 @@ export function GraphInputReceiver() {
 
 				const intersectingEdges = getIntersectingEdgeIds(edgeSliceStart, edgeSliceEnd);
 
-				console.log(intersectingEdges);
-
 				sliceEdge(edgeSliceEnd);
 				intersectingEdges.forEach(removeEdge);
 				break;
@@ -117,11 +105,10 @@ export function GraphInputReceiver() {
 					return;
 				}
 
-				const spawnPosition = getPosition(
-					e.clientX,
-					e.clientY,
-					e.currentTarget.getBoundingClientRect(),
-				);
+				const spawnPosition = {
+					x: (e.clientX - clientRect.x) / clientRect.width,
+					y: (e.clientY - clientRect.y) / clientRect.height,
+				};
 
 				addNode(heldNodeTemplate.templateFn({spawnPosition}));
 
