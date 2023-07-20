@@ -8,10 +8,10 @@ export function useMouseMove() {
 			setMousePos({x: e.clientX, y: e.clientY});
 		};
 
-		addEventListener('mousemove', handleMouseMove);
+		window.addEventListener('mousemove', handleMouseMove);
 
 		return () => {
-			removeEventListener(
+			window.removeEventListener(
 				'mousemove',
 				handleMouseMove,
 			);

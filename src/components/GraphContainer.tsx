@@ -2,7 +2,7 @@ import {NodeDisplay} from './NodeDisplay';
 import {GraphInputReceiver} from './GraphInputReceiver';
 import {SvgGraph} from './svg/SvgGraph';
 import {SvgGraphEdges} from './svg/SvgGraphEdges';
-import {SvgEdgeSlicer} from './svg/SvgEdgeSlicer';
+import {SvgMouseLinePreview} from './svg/SvgMouseLinePreview';
 
 // TODO: Figure out how I want to handle styling.
 // (Will need to Search all `React.CSSProperties` for cleanup)
@@ -20,7 +20,7 @@ export function GraphContainer() {
 			<GraphInputReceiver />
 			<SvgGraph>
 				<SvgGraphEdges />
-				<SvgEdgeSlicer />
+				<SvgMouseLinePreview />
 			</SvgGraph>
 			<NodeDisplay />
 		</div>
