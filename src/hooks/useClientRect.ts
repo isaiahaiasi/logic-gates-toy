@@ -24,7 +24,7 @@ export const useClientRect = <T extends Element>() => {
 		return () => {
 			window.removeEventListener('resize', debouncedSetClientRect);
 		};
-	}, []);
+	}, [clientRef, setClientRect]);
 
 	return {
 		clientRect,

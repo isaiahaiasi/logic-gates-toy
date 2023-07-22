@@ -1,6 +1,4 @@
-import {useMemo, type PropsWithChildren} from 'react';
-import {useClientRect} from '../../hooks/useClientRect';
-import {GraphSvgContext, type GraphSvgContextType} from '../../state_management/clientRectContext';
+import {type PropsWithChildren} from 'react';
 
 const containerStyle: React.CSSProperties = {
 	position: 'absolute',
@@ -13,24 +11,15 @@ const containerStyle: React.CSSProperties = {
  * Should receive the individual components (eg, SvgEdges) as children.
  */
 export function SvgGraph({children}: PropsWithChildren) {
-	const {clientRef, clientRect} = useClientRect<SVGSVGElement>();
-	const svgContextData: GraphSvgContextType = useMemo(
-		() => ({rect: clientRect}),
-		[clientRect],
-	);
-
 	return (
 		<div style={containerStyle}>
-			<GraphSvgContext.Provider value={svgContextData}>
-				<svg
-					width='100%'
-					height='100%'
-					stroke='black'
-					ref={clientRef}
-				>
-					{children}
-				</svg>
-			</GraphSvgContext.Provider>
+			<svg
+				width='100%'
+				height='100%'
+				stroke='black'
+			>
+				{children}
+			</svg>
 		</div>
 	);
 }

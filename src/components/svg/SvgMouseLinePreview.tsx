@@ -1,7 +1,5 @@
-import {useContext} from 'react';
 import {useMouseMove} from '../../hooks/useMouseMove';
 import {useUiStore} from '../../state_management/uiStore';
-import {GraphSvgContext} from '../../state_management/clientRectContext';
 import {useGraphStore} from '../../flowchart/graphStore';
 import {type Vec2} from '../../flowchart/graph';
 
@@ -28,7 +26,7 @@ interface SvgMouseLinePreviewProps {
 }
 
 function SvgEdgeSlicer({mousePos}: SvgMouseLinePreviewProps) {
-	const {rect} = useContext(GraphSvgContext);
+	const rect = useUiStore(state => state.clientRect);
 
 	const edgeSliceStart = useUiStore(state => state.edgeSliceStart);
 
@@ -47,7 +45,7 @@ function SvgEdgeSlicer({mousePos}: SvgMouseLinePreviewProps) {
 }
 
 function SvgEdgePreview({mousePos}: SvgMouseLinePreviewProps) {
-	const {rect} = useContext(GraphSvgContext);
+	const rect = useUiStore(state => state.clientRect);
 
 	const sourceNodeId = useUiStore(state => state.sourceNode);
 

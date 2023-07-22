@@ -66,7 +66,9 @@ export const useGraphStore = create<GraphStoreState & GraphStoreActions>()(set =
 		set(state => ({edges: state.edges.filter(edge => edge.id !== id)}));
 	},
 
-	updateNode(_node) {
-		throw new Error('Not Implemented Yet!');
+	updateNode(node) {
+		set(state => ({
+			nodes: {...state.nodes, [node.id]: node},
+		}));
 	},
 }));

@@ -1,14 +1,15 @@
-import {type Node} from '../flowchart/graph';
+import {type Vec2, type Node} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
 import {useUiStore} from '../state_management/uiStore';
+import {useDraggable} from '../hooks/useDraggable';
+import {type PropsWithChildren} from 'react';
 
 interface GraphNodeProps {
 	node: Node;
 }
 
-// These are tracked externally as numbers so that we can do math operations.
-// Specifically: find the middle so they spawn in CENTERED ON click position.
-
+// TODO: All of this messed up style merging should be replaced with
+// a scant handful of positioning in-line styling and otherwise thru classes.
 const graphNodeStyle: React.CSSProperties = {
 	position: 'absolute',
 	userSelect: 'none',
@@ -19,30 +20,50 @@ const graphNodeStyle: React.CSSProperties = {
 	alignItems: 'center',
 };
 
-export function GraphNode({node}: GraphNodeProps) {
-	const pickUpEdge = useUiStore(state => state.pickUpEdge);
-	const dropEdge = useUiStore(state => state.dropEdge);
-	const addEdge = useGraphStore(state => state.addEdge);
-
-	// TODO: Find a way to pull sourceNode out so graph doesn't re-render
-	//       every time an edge is picked up.
-	const heldEdgeSourceNode = useUiStore(state => state.sourceNode);
-
-	const isDrawingEdgeFromThis = heldEdgeSourceNode === node.id;
-
+function getNodeStyle(node: Node): React.CSSProperties {
 	const width = typeof node.size === 'number' ? node.size : node.size.x;
 	const height = typeof node.size === 'number' ? node.size : node.size.y;
 
-	const localStyle: React.CSSProperties = {
-		background: isDrawingEdgeFromThis ? '#59787e' : 'grey',
+	return {
 		width: `${width}rem`,
 		height: `${height}rem`,
 		top: `calc(${node.position.y * 100}% - ${height / 2}rem)`,
 		left: `calc(${node.position.x * 100}% - ${width / 2}rem)`,
 	};
+}
 
-	const handleClick: React.EventHandler<React.MouseEvent> = e => {
+export function GraphNode({node}: GraphNodeProps) {
+	const currentAction = useUiStore(state => state.currentAction);
+
+	const activateDragHandle
+		= currentAction === 'SELECTING_NODE_TO_DRAG'
+		|| currentAction === 'DRAGGING_NODE';
+
+	const Handle = activateDragHandle ? MoveNodeHandle : AddEdgeHandle;
+
+	return (
+		<Handle node={node}>
+			{node.data.label}
+		</Handle>
+	);
+}
+
+interface GraphNodeHandleProps extends PropsWithChildren {
+	node: Node;
+}
+
+function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
+	const addEdge = useGraphStore(state => state.addEdge);
+	const dropEdge = useUiStore(state => state.dropEdge);
+	const pickUpEdge = useUiStore(state => state.pickUpEdge);
+	const heldEdgeSourceNode = useUiStore(state => state.sourceNode);
+
+	const isDrawingEdgeFromThis = heldEdgeSourceNode === node.id;
+
+	// Adding edge
+	const handleClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
+
 		if (isDrawingEdgeFromThis) {
 			return;
 		}
@@ -60,15 +81,62 @@ export function GraphNode({node}: GraphNodeProps) {
 		}
 	};
 
+	const localStyle = getNodeStyle(node);
+
 	return (
-		<div
-			style={{
-				...graphNodeStyle,
-				...localStyle,
-			}}
-			onClick={handleClick}
+		<div onClick={handleClick} style={{
+			...graphNodeStyle,
+			...localStyle,
+			background: isDrawingEdgeFromThis ? '#59787e' : 'grey',
+		}}
 		>
-			{node.data.label}
+			{children}
+		</div>
+	);
+}
+
+function MoveNodeHandle({node, children}: GraphNodeHandleProps) {
+	const updateNode = useGraphStore(state => state.updateNode);
+
+	const rect = useUiStore(state => state.clientRect);
+	const startDraggingNode = useUiStore(state => state.startDraggingNode);
+	const stopDraggingNode = useUiStore(state => state.stopDraggingNode);
+
+	const handleDrag = (pos: Vec2) => {
+		const position = {
+			x: pos.x / rect.width,
+			y: pos.y / rect.height,
+		};
+
+		updateNode({...node, position});
+
+		return pos;
+	};
+
+	const [dragRef, pressed] = useDraggable({
+		onDrag: handleDrag,
+		onDragStart() {
+			startDraggingNode();
+		},
+		onDragEnd() {
+			stopDraggingNode();
+		},
+		initialPosition: {
+			x: node.position.x * rect.width,
+			y: node.position.y * rect.height,
+		},
+	});
+
+	const localStyle = getNodeStyle(node);
+
+	return (
+		<div ref={dragRef} style={{
+			...graphNodeStyle,
+			...localStyle,
+			border: 'solid blue',
+			background: pressed ? 'blue' : 'grey',
+		}}>
+			{children}
 		</div>
 	);
 }

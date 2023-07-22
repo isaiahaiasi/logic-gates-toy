@@ -1,9 +1,8 @@
-import {useContext} from 'react';
-import {GraphSvgContext} from '../../state_management/clientRectContext';
 import {useGraphStore} from '../../flowchart/graphStore';
+import {useUiStore} from '../../state_management/uiStore';
 
 export function SvgGraphEdges() {
-	const {rect} = useContext(GraphSvgContext);
+	const rect = useUiStore(state => state.clientRect);
 	const edges = useGraphStore(state => state.edges);
 	const nodes = useGraphStore(state => state.nodes);
 

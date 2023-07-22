@@ -16,6 +16,8 @@ export type UiPersistentAction =
 	'ADDING_NODE' |
 	'ADDING_EDGE' |
 	'REMOVING_EDGE' |
+	'SELECTING_NODE_TO_DRAG' | // HACK
+	'DRAGGING_NODE' |
 	'NONE';
 
 interface UiState {
@@ -34,15 +36,24 @@ interface UiState {
 	/** If ADDING_EDGE, the ID for the partial edge's "source" node. */
 	sourceNode?: NodeId;
 
+	/** If REMOVING_EDGE, the starting position of the edge slice. */
 	edgeSliceStart?: Vec2;
+
+	clientRect: DOMRect;
+
+	dragModeModifierHeld: boolean;
 }
 
 interface UiActions {
+	setClientRect: (clientRect: DOMRect) => void;
 	pickUpNodeTemplate: (template: NodeTemplate) => void;
 	dropNodeTemplate: () => void;
 	pickUpEdge: (sourceId: NodeId) => void;
 	dropEdge: () => void;
 	sliceEdge: (pos: Vec2) => void;
+	startDraggingNode: () => void;
+	stopDraggingNode: () => void;
+	setDragModeModifierHeld: (isHeld: boolean) => void;
 }
 
 // TODO: Write tests that guarantee invalid state is impossible
@@ -52,9 +63,21 @@ interface UiActions {
 // - (that "and only if" means I need to test non-obvious paths thru State Machine graph)
 export const useUiStore = create<UiState & UiActions>()(set => ({
 	currentAction: 'NONE',
+
+	clientRect: new DOMRect(0, 0, 0, 0),
+
 	heldNodeTemplate: undefined,
+
 	sourceNode: undefined,
+
 	edgeSliceStart: undefined,
+
+	dragModeModifierHeld: false,
+
+	setClientRect(clientRect) {
+		set(_ => ({clientRect}));
+	},
+
 	pickUpNodeTemplate(template) {
 		set(_ => ({
 			currentAction: 'ADDING_NODE',
@@ -62,12 +85,14 @@ export const useUiStore = create<UiState & UiActions>()(set => ({
 			sourceNode: undefined,
 		}));
 	},
+
 	dropNodeTemplate() {
 		set(_ => ({
 			currentAction: 'NONE',
 			heldNodeTemplate: undefined,
 		}));
 	},
+
 	pickUpEdge(sourceId) {
 		set(_ => ({
 			currentAction: 'ADDING_EDGE',
@@ -76,12 +101,14 @@ export const useUiStore = create<UiState & UiActions>()(set => ({
 			edgeSliceStart: undefined,
 		}));
 	},
+
 	dropEdge() {
 		set(_ => ({
 			currentAction: 'NONE',
 			sourceNode: undefined,
 		}));
 	},
+
 	// NOTE: Not sure it actually makes sense to handle these two states under one Action.
 	sliceEdge(pos: Vec2) {
 		set(state => {
@@ -104,5 +131,30 @@ export const useUiStore = create<UiState & UiActions>()(set => ({
 			console.error(`Cannot slice edge while currentAction is ${state.currentAction}!`);
 			return {};
 		});
+	},
+
+	startDraggingNode() {
+		set(_ => ({
+			currentAction: 'DRAGGING_NODE',
+			heldNodeTemplate: undefined,
+			sourceNode: undefined,
+			edgeSliceStart: undefined,
+		}));
+	},
+
+	stopDraggingNode() {
+		set(state => ({
+			currentAction: state.dragModeModifierHeld ? 'SELECTING_NODE_TO_DRAG' : 'NONE',
+			heldNodeTemplate: undefined,
+			sourceNode: undefined,
+			edgeSliceStart: undefined,
+		}));
+	},
+
+	setDragModeModifierHeld(isHeld) {
+		set(_ => ({
+			currentAction: isHeld ? 'SELECTING_NODE_TO_DRAG' : 'NONE',
+			dragModeModifierHeld: isHeld,
+		}));
 	},
 }));
