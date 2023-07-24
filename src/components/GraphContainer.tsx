@@ -29,7 +29,7 @@ export function GraphContainer() {
 
 	const handleMoveModifierKeypress = (e: KeyboardEvent) => {
 		// TODO: HACK: Drag Modifier should be part of UI Configuration, not hard-coded!!!
-		if (e.key !== 'Meta') {
+		if (e.key !== 'Shift') {
 			return;
 		}
 

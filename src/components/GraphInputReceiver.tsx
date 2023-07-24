@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 
 import {useGraphStore} from '../flowchart/graphStore';
 import {useClientRect} from '../hooks/useClientRect';
@@ -15,14 +14,15 @@ const inputHandlerStyle: React.CSSProperties = {
 	width: '100%',
 };
 
-type InputHandlerComponentType = (props: InputHandlerProps) => JSX.Element;
-
-const uiActionInputHandlerComponentMap: Record<UiPersistentAction, InputHandlerComponentType> = {
-	NONE: BeginEdgeSliceInputHandler,
-	ADDING_NODE: AddNodeInputHandler,
-	REMOVING_EDGE: RemoveEdgeInputHandler,
-	ADDING_EDGE: DropEdgeInputHandler,
-};
+function getHandlerComponent(currentAction: UiPersistentAction) {
+	switch (currentAction) {
+		case 'NONE': return BeginEdgeSliceInputHandler;
+		case 'ADDING_NODE': return AddNodeInputHandler;
+		case 'REMOVING_EDGE': return RemoveEdgeInputHandler;
+		case 'ADDING_EDGE': return DropEdgeInputHandler;
+		default: return null;
+	}
+}
 
 /**
  * Empty div that occupies the space of the graph & receives inputs.
@@ -34,7 +34,7 @@ export function GraphInputReceiver() {
 
 	const currentAction = useUiStore(state => state.currentAction);
 
-	const InputHandlerComponent = uiActionInputHandlerComponentMap[currentAction];
+	const InputHandlerComponent = getHandlerComponent(currentAction);
 
 	return (
 		<div style={style} ref={clientRef}>
