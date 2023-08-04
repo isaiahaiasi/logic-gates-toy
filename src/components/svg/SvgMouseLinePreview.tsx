@@ -1,7 +1,8 @@
 import {useMouseMove} from '../../hooks/useMouseMove';
 import {useUiStore} from '../../state_management/uiStore';
 import {useGraphStore} from '../../flowchart/graphStore';
-import {type Vec2} from '../../flowchart/graph';
+import {type Vec2} from '../../flowchart/Vec2';
+import {getClientSpaceNodePosition} from '../../flowchart/graph';
 
 // NOTE: This wrapping component might not really be necessary.
 export function SvgMouseLinePreview() {
@@ -54,15 +55,17 @@ function SvgEdgePreview({mousePos}: SvgMouseLinePreviewProps) {
 	}
 
 	const nodes = useGraphStore(state => state.nodes);
-	const node = nodes[sourceNodeId];
 
-	if (!node) {
+	// TODO: Should lift this up so the calculation isn't re-running every mousemove!
+	const clientSpaceNodePos = getClientSpaceNodePosition(sourceNodeId, nodes, rect);
+
+	if (!clientSpaceNodePos) {
 		throw new Error(`Could not find node with id ${sourceNodeId ?? '<undefined>'}!`);
 	}
 
 	return <line
-		x1={node.position.x * rect.width}
-		y1={node.position.y * rect.height}
+		x1={clientSpaceNodePos.x}
+		y1={clientSpaceNodePos.y}
 		x2={mousePos.x - rect.x}
 		y2={mousePos.y - rect.y}
 		strokeWidth={2}

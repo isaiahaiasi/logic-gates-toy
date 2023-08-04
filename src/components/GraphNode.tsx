@@ -1,15 +1,14 @@
-import {type Vec2, type Node} from '../flowchart/graph';
+import {type Node} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
 import {useUiStore} from '../state_management/uiStore';
 import {useDraggable} from '../hooks/useDraggable';
 import {type PropsWithChildren} from 'react';
+import {type Vec2} from '../flowchart/Vec2';
 
 interface GraphNodeProps {
 	node: Node;
 }
 
-// TODO: All of this messed up style merging should be replaced with
-// a scant handful of positioning in-line styling and otherwise thru classes.
 const graphNodeStyle: React.CSSProperties = {
 	position: 'absolute',
 	userSelect: 'none',
@@ -25,15 +24,16 @@ function getNodeStyle(node: Node): React.CSSProperties {
 	const height = typeof node.size === 'number' ? node.size : node.size.y;
 
 	return {
-		width: `${width}rem`,
-		height: `${height}rem`,
-		top: `calc(${node.position.y * 100}% - ${height / 2}rem)`,
-		left: `calc(${node.position.x * 100}% - ${width / 2}rem)`,
+		width: `${width}px`,
+		height: `${height}px`,
+		top: `calc(${node.position.y * 100}% - ${height / 2}px)`,
+		left: `calc(${node.position.x * 100}% - ${width / 2}px)`,
 	};
 }
 
 export function GraphNode({node}: GraphNodeProps) {
 	const currentAction = useUiStore(state => state.currentAction);
+	const nodes = useGraphStore(state => state.nodes);
 
 	const activateDragHandle
 		= currentAction === 'SELECTING_NODE_TO_DRAG'
@@ -43,6 +43,10 @@ export function GraphNode({node}: GraphNodeProps) {
 
 	return (
 		<Handle node={node}>
+			{node.children?.map(childId => {
+				const childNode = nodes[childId];
+				return childNode && <GraphNode node={childNode} key={childNode.id} />;
+			})}
 			{node.data.label}
 		</Handle>
 	);

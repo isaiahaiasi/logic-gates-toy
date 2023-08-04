@@ -1,12 +1,18 @@
 import {create} from 'zustand';
-import {type Vec2, type Node, type NodeId} from '../flowchart/graph';
+import {type Node, type NodeId} from '../flowchart/graph';
+import {type Vec2} from '../flowchart/Vec2';
 
 interface NodePlacementInfo {
 	spawnPosition: Vec2;
 }
 
 export interface NodeTemplate {
-	templateFn: (info: NodePlacementInfo) => Node;
+	/** The function used to actually instantiate the Node. */
+	templateFn: (info: NodePlacementInfo) => Node | Node[];
+
+	/** The label used to represent the Template itself (eg, in a selection menu),
+	 * NOT the label that will appear on each instance of the placed Node.
+	 */
 	label: string;
 }
 

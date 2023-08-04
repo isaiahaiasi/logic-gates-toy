@@ -1,3 +1,4 @@
+import {getClientSpaceNodePosition} from '../../flowchart/graph';
 import {useGraphStore} from '../../flowchart/graphStore';
 import {useUiStore} from '../../state_management/uiStore';
 
@@ -8,15 +9,19 @@ export function SvgGraphEdges() {
 
 	return (
 		<>{edges.map(edge => {
-			const sourceNode = nodes[edge.source];
-			const targetNode = nodes[edge.target];
+			const sourceNodePos = getClientSpaceNodePosition(edge.source, nodes, rect);
+			const targetNodePos = getClientSpaceNodePosition(edge.target, nodes, rect);
+
+			if (!sourceNodePos || !targetNodePos) {
+				return null;
+			}
 
 			return (
 				<line
-					x1={(sourceNode?.position.x ?? 0) * rect.width}
-					y1={(sourceNode?.position.y ?? 0) * rect.height}
-					x2={(targetNode?.position.x ?? 0) * rect.width}
-					y2={(targetNode?.position.y ?? 0) * rect.height}
+					x1={sourceNodePos.x}
+					y1={sourceNodePos.y}
+					x2={targetNodePos.x}
+					y2={targetNodePos.y}
 					strokeWidth={2}
 					style={{pointerEvents: 'all'}}
 					key={edge.id}

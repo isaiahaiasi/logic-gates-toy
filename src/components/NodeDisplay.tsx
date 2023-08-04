@@ -1,7 +1,6 @@
 import {useGraphStore} from '../flowchart/graphStore';
 import {GraphNode} from './GraphNode';
 
-// TODO: Style
 const style: React.CSSProperties = {
 	width: '100%',
 	height: '100%',
@@ -12,7 +11,11 @@ export function NodeDisplay() {
 
 	return (
 		<div style={style}>
-			{Object.values(nodes).map(node => <GraphNode node={node} key={node.id} />)}
+			{ // Only render "top level" nodes.
+				Object.values(nodes)
+					.filter(node => !node.parent)
+					.map(node => <GraphNode node={node} key={node.id} />)
+			}
 		</div>
 	);
 }

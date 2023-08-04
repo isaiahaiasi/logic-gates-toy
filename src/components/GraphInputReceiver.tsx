@@ -1,4 +1,5 @@
 
+import {getClientSpaceNodePosition} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
 import {useClientRect} from '../hooks/useClientRect';
 import {type UiPersistentAction, useUiStore} from '../state_management/uiStore';
@@ -49,7 +50,7 @@ interface InputHandlerProps {
 
 function AddNodeInputHandler({rect}: InputHandlerProps) {
 	const heldNodeTemplate = useUiStore(state => state.heldNodeTemplate);
-	const addNode = useGraphStore(state => state.addNode);
+	const addNodes = useGraphStore(state => state.addNodes);
 
 	// PLACE NODE
 	if (!heldNodeTemplate) {
@@ -62,7 +63,13 @@ function AddNodeInputHandler({rect}: InputHandlerProps) {
 			y: (e.clientY - rect.y) / rect.height,
 		};
 
-		addNode(heldNodeTemplate.templateFn({spawnPosition}));
+		// NOTE: This feels too business-y to be stuffed in a click handler.
+		let nodes = heldNodeTemplate.templateFn({spawnPosition});
+		if (!Array.isArray(nodes)) {
+			nodes = [nodes];
+		}
+
+		addNodes(...nodes);
 	};
 
 	return <div style={inputHandlerStyle} onClick={handleClick} />;
@@ -83,6 +90,8 @@ function BeginEdgeSliceInputHandler({rect}: InputHandlerProps) {
 			y: e.clientY - rect.y,
 		};
 
+		// !!!
+		// TODO: FIX THIS!!!!
 		sliceEdge(slicePos);
 	};
 
@@ -108,11 +117,11 @@ function RemoveEdgeInputHandler({rect}: InputHandlerProps) {
 		}
 
 		const intersectingEdges = edges.filter(edge => {
-			const source = nodes[edge.source];
-			const target = nodes[edge.target];
+			const sourcePos = getClientSpaceNodePosition(edge.source, nodes, rect);
+			const targetPos = getClientSpaceNodePosition(edge.target, nodes, rect);
 
-			if (!source || !target) {
-				console.error(`Could not find node with id ${source ? edge.target : edge.source}`);
+			if (!sourcePos || !targetPos) {
+				console.error(`Could not find node with id ${sourcePos ? edge.target : edge.source}`);
 				return false;
 			}
 
@@ -120,12 +129,12 @@ function RemoveEdgeInputHandler({rect}: InputHandlerProps) {
 				edgeSliceStart,
 				edgeSliceEnd,
 				{
-					x: source.position.x * rect.width,
-					y: source.position.y * rect.height,
+					x: sourcePos.x,
+					y: sourcePos.y,
 				},
 				{
-					x: target.position.x * rect.width,
-					y: target.position.y * rect.height,
+					x: targetPos.x,
+					y: targetPos.y,
 				},
 			);
 		});

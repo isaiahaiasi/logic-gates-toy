@@ -7,7 +7,7 @@ interface GraphStoreState {
 }
 
 interface GraphStoreActions {
-	addNode: (node: Node) => void;
+	addNodes: (...nodes: Node[]) => void;
 	removeNode: (nodeId: NodeId) => void;
 	addEdge: (edge: Edge) => void;
 	removeEdge: (edgeId: EdgeId) => void;
@@ -26,9 +26,15 @@ export const useGraphStore = create<GraphStoreState & GraphStoreActions>()(set =
 	nodes: {},
 	edges: [],
 
-	addNode(node) {
+	addNodes(...nodes) {
+		const newNodes: Record<NodeId, Node> = {};
+
+		for (const n of nodes) {
+			newNodes[n.id] = n;
+		}
+
 		set(state => ({
-			nodes: {...state.nodes, [node.id]: node},
+			nodes: {...state.nodes, ...newNodes},
 		}),
 		);
 	},
