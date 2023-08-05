@@ -1,10 +1,10 @@
 import {useUiStore} from '../../state_management/uiStore';
 
 export function UiStateInfo() {
-	const heldNodeTemplate = useUiStore(state => state.heldNodeTemplate);
-	const sourceNode = useUiStore(state => state.sourceNode);
-	const edgeSliceStart = useUiStore(state => state.edgeSliceStart);
-	const currentAction = useUiStore(state => state.currentAction);
+	const heldNodeTemplate = useUiStore.use.heldNodeTemplate?.();
+	const sourceNode = useUiStore.use.sourceNode?.();
+	const edgeSliceStart = useUiStore.use.edgeSliceStart?.();
+	const currentAction = useUiStore.use.currentAction();
 
 	let subDescription: string | undefined;
 

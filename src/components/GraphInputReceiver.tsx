@@ -30,7 +30,7 @@ function getHandlerComponent(currentAction: UiPersistentAction) {
  * (because other graph elements should have already intercepted the click, if present).
  */
 export function GraphInputReceiver() {
-	const currentAction = useUiStore(state => state.currentAction);
+	const currentAction = useUiStore.use.currentAction();
 
 	const InputHandlerComponent = getHandlerComponent(currentAction);
 
@@ -44,8 +44,8 @@ export function GraphInputReceiver() {
 function AddNodeInputHandler() {
 	const addNodes = useGraphStore(state => state.addNodes);
 
-	const rect = useUiStore(state => state.clientRect);
-	const heldNodeTemplate = useUiStore(state => state.heldNodeTemplate);
+	const rect = useUiStore.use.clientRect();
+	const heldNodeTemplate = useUiStore.use.heldNodeTemplate?.();
 
 	// PLACE NODE
 	if (!heldNodeTemplate) {
@@ -71,14 +71,14 @@ function AddNodeInputHandler() {
 }
 
 function DropEdgeInputHandler() {
-	const dropEdge = useUiStore(state => state.dropEdge);
+	const dropEdge = useUiStore.use.dropEdge();
 
 	return <div style={inputHandlerStyle} onClick={dropEdge} />;
 }
 
 function BeginEdgeSliceInputHandler() {
-	const rect = useUiStore(state => state.clientRect);
-	const sliceEdge = useUiStore(state => state.sliceEdge);
+	const rect = useUiStore.use.clientRect();
+	const sliceEdge = useUiStore.use.sliceEdge();
 
 	const handleClick = (e: React.MouseEvent) => {
 		const slicePos = {
@@ -97,9 +97,9 @@ function RemoveEdgeInputHandler() {
 	const removeEdge = useGraphStore(state => state.removeEdge);
 	const nodes = useGraphStore(state => state.nodes);
 
-	const rect = useUiStore(state => state.clientRect);
-	const sliceEdge = useUiStore(state => state.sliceEdge);
-	const edgeSliceStart = useUiStore(state => state.edgeSliceStart);
+	const rect = useUiStore.use.clientRect();
+	const sliceEdge = useUiStore.use.sliceEdge();
+	const edgeSliceStart = useUiStore.use.edgeSliceStart?.();
 
 	const handleClick = (e: React.MouseEvent) => {
 		const edgeSliceEnd = {

@@ -6,7 +6,7 @@ import {getClientSpaceNodePosition} from '../../flowchart/graph';
 
 // NOTE: This wrapping component might not really be necessary.
 export function SvgMouseLinePreview() {
-	const currentAction = useUiStore(state => state.currentAction);
+	const currentAction = useUiStore.use.currentAction();
 
 	// NOTE: mousePos is (0, 0) on 1st render,  so I can't actually use this hook
 	// NOTE: at the level the component is actually rendered. Not ideal!
@@ -27,9 +27,9 @@ interface SvgMouseLinePreviewProps {
 }
 
 function SvgEdgeSlicer({mousePos}: SvgMouseLinePreviewProps) {
-	const rect = useUiStore(state => state.clientRect);
+	const rect = useUiStore.use.clientRect();
 
-	const edgeSliceStart = useUiStore(state => state.edgeSliceStart);
+	const edgeSliceStart = useUiStore.use.edgeSliceStart?.();
 
 	if (!edgeSliceStart) {
 		throw new Error('Invalid UI State in SvgEdgeSlicer: no edgeSliceStart!');
@@ -46,9 +46,9 @@ function SvgEdgeSlicer({mousePos}: SvgMouseLinePreviewProps) {
 }
 
 function SvgEdgePreview({mousePos}: SvgMouseLinePreviewProps) {
-	const rect = useUiStore(state => state.clientRect);
+	const rect = useUiStore.use.clientRect();
 
-	const sourceNodeId = useUiStore(state => state.sourceNode);
+	const sourceNodeId = useUiStore.use.sourceNode?.();
 
 	if (!sourceNodeId) {
 		throw new Error('Invalid UI State in SvgEdgePreview: no current sourceNode!');

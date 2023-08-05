@@ -18,13 +18,13 @@ const graphContainerStyle: React.CSSProperties = {
 };
 
 export function GraphContainer() {
-	const setClientRect = useUiStore(state => state.setClientRect);
+	const setDragModeModifierHeld = useUiStore.use.setDragModeModifierHeld();
+	const setClientRect = useUiStore.use.setClientRect();
 	const {clientRef} = useClientRect<HTMLDivElement>(setClientRect);
-
-	const setDragModeModifierHeld = useUiStore(state => state.setDragModeModifierHeld);
 
 	// TODO: Drag Modifier should be part of UI Configuration, not hard-coded.
 	const dragModeKey = 'Shift';
+
 	useKeyEvent('keydown', dragModeKey, () => {
 		setDragModeModifierHeld(true);
 	});

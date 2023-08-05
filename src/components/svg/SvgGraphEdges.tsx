@@ -3,7 +3,7 @@ import {useGraphStore} from '../../flowchart/graphStore';
 import {useUiStore} from '../../state_management/uiStore';
 
 export function SvgGraphEdges() {
-	const rect = useUiStore(state => state.clientRect);
+	const rect = useUiStore.use.clientRect();
 	const edges = useGraphStore(state => state.edges);
 	const nodes = useGraphStore(state => state.nodes);
 

@@ -9,9 +9,9 @@ const activeStyle: React.CSSProperties = {
 };
 
 export function GraphNodeListItem({template}: GraphNodeListItemProps) {
-	const pickUpNode = useUiStore(state => state.pickUpNodeTemplate);
-	const dropNode = useUiStore(state => state.dropNodeTemplate);
-	const currentlyHeldNode = useUiStore(state => state.heldNodeTemplate);
+	const pickUpNode = useUiStore.use.pickUpNodeTemplate();
+	const dropNode = useUiStore.use.dropNodeTemplate();
+	const currentlyHeldNode = useUiStore.use.heldNodeTemplate?.();
 
 	// NOTE: Not sure how to SEMANTICALLY represent "currently selected" state.
 	const isSelected = currentlyHeldNode?.label === template.label;

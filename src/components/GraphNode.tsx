@@ -34,7 +34,7 @@ function getNodeStyle(node: Node, mode: 'grab' | 'pointer' | 'not-allowed'): Rea
 }
 
 export function GraphNode({node}: GraphNodeProps) {
-	const currentAction = useUiStore(state => state.currentAction);
+	const currentAction = useUiStore.use.currentAction();
 	const nodes = useGraphStore(state => state.nodes);
 
 	let Handle = NullHandle;
@@ -95,9 +95,9 @@ function NullHandle({node, children}: GraphNodeHandleProps) {
 
 function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 	const addEdge = useGraphStore(state => state.addEdge);
-	const dropEdge = useUiStore(state => state.dropEdge);
-	const pickUpEdge = useUiStore(state => state.pickUpEdge);
-	const heldEdgeSourceNode = useUiStore(state => state.sourceNode);
+	const dropEdge = useUiStore.use.dropEdge();
+	const pickUpEdge = useUiStore.use.pickUpEdge();
+	const heldEdgeSourceNode = useUiStore.use.sourceNode?.();
 
 	const isDrawingEdgeFromThis = heldEdgeSourceNode === node.id;
 
@@ -144,9 +144,9 @@ function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 function MoveNodeHandle({node, children}: GraphNodeHandleProps) {
 	const updateNode = useGraphStore(state => state.updateNode);
 
-	const rect = useUiStore(state => state.clientRect);
-	const startDraggingNode = useUiStore(state => state.startDraggingNode);
-	const stopDraggingNode = useUiStore(state => state.stopDraggingNode);
+	const rect = useUiStore.use.clientRect();
+	const startDraggingNode = useUiStore.use.startDraggingNode();
+	const stopDraggingNode = useUiStore.use.stopDraggingNode();
 
 	const handleDrag = (pos: Vec2) => {
 		const position = {

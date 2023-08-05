@@ -1,6 +1,7 @@
 import {create} from 'zustand';
 import {type Node, type NodeId} from '../flowchart/graph';
 import {type Vec2} from '../flowchart/Vec2';
+import {createSelectors} from '../utils/zustandHelpers';
 
 interface NodePlacementInfo {
 	spawnPosition: Vec2;
@@ -26,7 +27,7 @@ export type UiPersistentAction =
 	'DRAGGING_NODE' |
 	'NONE';
 
-interface UiState {
+interface UiState extends Record<string, unknown> {
 	/** The "state" of the UI, broadly:
 	 * "are they holding a node?", "are they dragging an edge?", etc.
 	 */
@@ -50,7 +51,7 @@ interface UiState {
 	dragModeModifierHeld: boolean;
 }
 
-interface UiActions {
+interface UiActions extends Record<string, unknown> {
 	setClientRect: (clientRect: DOMRect) => void;
 	pickUpNodeTemplate: (template: NodeTemplate) => void;
 	dropNodeTemplate: () => void;
@@ -67,7 +68,7 @@ interface UiActions {
 // - sourceNode must be set **IFF** currentAction ADDING_EDGE
 // - edgeSliceStart must be set **IFF** currentAction REMOVING_EDGE
 // - (that "and only if" means I need to test non-obvious paths thru State Machine graph)
-export const useUiStore = create<UiState & UiActions>()(set => ({
+const useUiStoreBase = create<UiState & UiActions>()(set => ({
 	currentAction: 'NONE',
 
 	clientRect: new DOMRect(0, 0, 0, 0),
@@ -164,3 +165,5 @@ export const useUiStore = create<UiState & UiActions>()(set => ({
 		}));
 	},
 }));
+
+export const useUiStore = createSelectors(useUiStoreBase);
