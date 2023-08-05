@@ -20,7 +20,7 @@ const graphNodeStyle: React.CSSProperties = {
 	alignItems: 'center',
 };
 
-function getNodeStyle(node: Node, mode: 'grab' | 'extend'): React.CSSProperties {
+function getNodeStyle(node: Node, mode: 'grab' | 'pointer' | 'not-allowed'): React.CSSProperties {
 	const width = typeof node.size === 'number' ? node.size : node.size.x;
 	const height = typeof node.size === 'number' ? node.size : node.size.y;
 
@@ -29,7 +29,7 @@ function getNodeStyle(node: Node, mode: 'grab' | 'extend'): React.CSSProperties 
 		height: `${height}px`,
 		top: `calc(${node.position.y * 100}% - ${height / 2}px)`,
 		left: `calc(${node.position.x * 100}% - ${width / 2}px)`,
-		cursor: mode === 'grab' ? 'grab' : 'pointer',
+		cursor: mode,
 	};
 }
 
@@ -37,11 +37,28 @@ export function GraphNode({node}: GraphNodeProps) {
 	const currentAction = useUiStore(state => state.currentAction);
 	const nodes = useGraphStore(state => state.nodes);
 
-	const activateDragHandle
-		= currentAction === 'SELECTING_NODE_TO_DRAG'
-		|| currentAction === 'DRAGGING_NODE';
+	let Handle = NullHandle;
 
-	const Handle = activateDragHandle ? MoveNodeHandle : AddEdgeHandle;
+	switch (currentAction) {
+		case 'SELECTING_NODE_TO_DRAG':
+		case 'DRAGGING_NODE':
+			if (!node.lockPosition) {
+				Handle = MoveNodeHandle;
+			}
+
+			break;
+		case 'ADDING_EDGE':
+		case 'ADDING_NODE':
+		case 'REMOVING_EDGE':
+		case 'NONE':
+			if (!node.lockExtension) {
+				Handle = AddEdgeHandle;
+			}
+
+			break;
+		default:
+		// NullHandle already assigned as default case.
+	}
 
 	return (
 		<Handle node={node}>
@@ -56,6 +73,24 @@ export function GraphNode({node}: GraphNodeProps) {
 
 interface GraphNodeHandleProps extends PropsWithChildren {
 	node: Node;
+}
+
+function NullHandle({node, children}: GraphNodeHandleProps) {
+	const style = getNodeStyle(node, 'not-allowed');
+	return (
+		<div
+			onMouseDown={e => {
+				e.preventDefault();
+			}}
+			style={{
+				...graphNodeStyle,
+				...style,
+				background: 'grey',
+			}}
+		>
+			{children}
+		</div>
+	);
 }
 
 function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
@@ -87,14 +122,19 @@ function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 		}
 	};
 
-	const localStyle = getNodeStyle(node, 'extend');
+	const localStyle = getNodeStyle(node, 'pointer');
 
 	return (
-		<div onClick={handleClick} style={{
-			...graphNodeStyle,
-			...localStyle,
-			background: isDrawingEdgeFromThis ? '#59787e' : 'grey',
-		}}
+		<div
+			onClick={handleClick}
+			onMouseDown={e => {
+				e.preventDefault();
+			}}
+			style={{
+				...graphNodeStyle,
+				...localStyle,
+				background: isDrawingEdgeFromThis ? '#59787e' : 'grey',
+			}}
 		>
 			{children}
 		</div>
@@ -133,15 +173,22 @@ function MoveNodeHandle({node, children}: GraphNodeHandleProps) {
 		},
 	});
 
+	// TODO: Distinguish between 'grab' & 'grabbing'
 	const localStyle = getNodeStyle(node, 'grab');
 
 	return (
-		<div ref={dragRef} style={{
-			...graphNodeStyle,
-			...localStyle,
-			border: 'solid blue',
-			background: pressed ? 'blue' : 'grey',
-		}}>
+		<div
+			ref={dragRef}
+			onMouseDown={e => {
+				e.preventDefault();
+			}}
+			style={{
+				...graphNodeStyle,
+				...localStyle,
+				border: 'solid blue',
+				background: pressed ? 'blue' : 'grey',
+			}}
+		>
 			{children}
 		</div>
 	);

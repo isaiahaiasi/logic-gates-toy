@@ -1,4 +1,5 @@
 import {type Vec2} from '../flowchart/Vec2';
+import {type Node} from '../flowchart/graph';
 import {type NodeTemplate} from '../state_management/uiStore';
 
 // Templates/definitions used to construct Graph Node entities.
@@ -7,13 +8,14 @@ function getChildId(parentId: string, childName: string) {
 	return `${parentId}::${childName}`;
 }
 
-function getPinNode(id: string, pin: string, position: Vec2) {
+function getPinNode(id: string, pin: string, position: Vec2): Node {
 	return {
 		id: getChildId(id, pin),
 		position,
 		size: {x: 16, y: 16},
 		data: {label: ''},
 		parent: id,
+		lockPosition: true,
 	};
 }
 
@@ -26,6 +28,7 @@ export const andTemplate: NodeTemplate = {
 				id,
 				position: info.spawnPosition,
 				size: {x: 80, y: 48},
+				lockExtension: true,
 				data: {
 					label: 'AND',
 				},
@@ -51,6 +54,7 @@ export const notTemplate: NodeTemplate = {
 				id,
 				position: info.spawnPosition,
 				size: {x: 64, y: 32},
+				lockExtension: true,
 				data: {
 					label: 'NOT',
 				},
@@ -74,6 +78,7 @@ export const orTemplate: NodeTemplate = {
 				id,
 				position: info.spawnPosition,
 				size: {x: 80, y: 48},
+				lockExtension: true,
 				data: {
 					label: 'OR',
 				},

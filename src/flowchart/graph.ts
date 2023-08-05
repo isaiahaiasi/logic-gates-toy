@@ -9,6 +9,8 @@ export interface Node {
 	size: number | Vec2;
 	parent?: NodeId;
 	children?: NodeId[];
+	lockPosition?: boolean;
+	lockExtension?: boolean;
 
 	// NOTE: Should things associated with chips should be"
 	// NOTE: - embedded, making Node generic (Node<T>) (and Zustand management nested generic...)
