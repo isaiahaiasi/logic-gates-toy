@@ -1,7 +1,6 @@
 
 import {getClientSpaceNodePosition} from '../flowchart/graph';
 import {useGraphStore} from '../flowchart/graphStore';
-import {useClientRect} from '../hooks/useClientRect';
 import {type UiPersistentAction, useUiStore} from '../state_management/uiStore';
 import {doLinesIntersect} from '../utils/doLinesIntersect';
 
@@ -31,26 +30,22 @@ function getHandlerComponent(currentAction: UiPersistentAction) {
  * (because other graph elements should have already intercepted the click, if present).
  */
 export function GraphInputReceiver() {
-	const {clientRef, clientRect} = useClientRect<HTMLDivElement>();
-
 	const currentAction = useUiStore(state => state.currentAction);
 
 	const InputHandlerComponent = getHandlerComponent(currentAction);
 
 	return (
-		<div style={style} ref={clientRef}>
-			{InputHandlerComponent && <InputHandlerComponent rect={clientRect} />}
+		<div style={style}>
+			{InputHandlerComponent && <InputHandlerComponent />}
 		</div>
 	);
 }
 
-interface InputHandlerProps {
-	rect: DOMRect;
-}
-
-function AddNodeInputHandler({rect}: InputHandlerProps) {
-	const heldNodeTemplate = useUiStore(state => state.heldNodeTemplate);
+function AddNodeInputHandler() {
 	const addNodes = useGraphStore(state => state.addNodes);
+
+	const rect = useUiStore(state => state.clientRect);
+	const heldNodeTemplate = useUiStore(state => state.heldNodeTemplate);
 
 	// PLACE NODE
 	if (!heldNodeTemplate) {
@@ -81,7 +76,8 @@ function DropEdgeInputHandler() {
 	return <div style={inputHandlerStyle} onClick={dropEdge} />;
 }
 
-function BeginEdgeSliceInputHandler({rect}: InputHandlerProps) {
+function BeginEdgeSliceInputHandler() {
+	const rect = useUiStore(state => state.clientRect);
 	const sliceEdge = useUiStore(state => state.sliceEdge);
 
 	const handleClick = (e: React.MouseEvent) => {
@@ -96,11 +92,12 @@ function BeginEdgeSliceInputHandler({rect}: InputHandlerProps) {
 	return <div style={inputHandlerStyle} onClick={handleClick} />;
 }
 
-function RemoveEdgeInputHandler({rect}: InputHandlerProps) {
+function RemoveEdgeInputHandler() {
 	const edges = useGraphStore(state => state.edges);
 	const removeEdge = useGraphStore(state => state.removeEdge);
 	const nodes = useGraphStore(state => state.nodes);
 
+	const rect = useUiStore(state => state.clientRect);
 	const sliceEdge = useUiStore(state => state.sliceEdge);
 	const edgeSliceStart = useUiStore(state => state.edgeSliceStart);
 

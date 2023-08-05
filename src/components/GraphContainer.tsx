@@ -19,11 +19,8 @@ const graphContainerStyle: React.CSSProperties = {
 
 export function GraphContainer() {
 	// Update the clientRect for the graph container in the UI Store.
-	const {clientRef, clientRect} = useClientRect<HTMLDivElement>();
 	const setClientRect = useUiStore(state => state.setClientRect);
-	useEffect(() => {
-		setClientRect(clientRect);
-	}, [clientRect]);
+	const {clientRef} = useClientRect<HTMLDivElement>(setClientRect);
 
 	const setDragModeModifierHeld = useUiStore(state => state.setDragModeModifierHeld);
 
