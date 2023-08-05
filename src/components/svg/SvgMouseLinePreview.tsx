@@ -54,7 +54,7 @@ function SvgEdgePreview({mousePos}: SvgMouseLinePreviewProps) {
 		throw new Error('Invalid UI State in SvgEdgePreview: no current sourceNode!');
 	}
 
-	const nodes = useGraphStore(state => state.nodes);
+	const nodes = useGraphStore.use.nodes();
 
 	// TODO: Should lift this up so the calculation isn't re-running every mousemove!
 	const clientSpaceNodePos = getClientSpaceNodePosition(sourceNodeId, nodes, rect);

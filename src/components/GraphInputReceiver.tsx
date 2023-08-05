@@ -42,7 +42,7 @@ export function GraphInputReceiver() {
 }
 
 function AddNodeInputHandler() {
-	const addNodes = useGraphStore(state => state.addNodes);
+	const addNodes = useGraphStore.use.addNodes();
 
 	const rect = useUiStore.use.clientRect();
 	const heldNodeTemplate = useUiStore.use.heldNodeTemplate?.();
@@ -93,9 +93,9 @@ function BeginEdgeSliceInputHandler() {
 }
 
 function RemoveEdgeInputHandler() {
-	const edges = useGraphStore(state => state.edges);
-	const removeEdge = useGraphStore(state => state.removeEdge);
-	const nodes = useGraphStore(state => state.nodes);
+	const edges = useGraphStore.use.edges();
+	const removeEdge = useGraphStore.use.removeEdge();
+	const nodes = useGraphStore.use.nodes();
 
 	const rect = useUiStore.use.clientRect();
 	const sliceEdge = useUiStore.use.sliceEdge();

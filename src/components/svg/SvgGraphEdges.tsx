@@ -4,8 +4,8 @@ import {useUiStore} from '../../state_management/uiStore';
 
 export function SvgGraphEdges() {
 	const rect = useUiStore.use.clientRect();
-	const edges = useGraphStore(state => state.edges);
-	const nodes = useGraphStore(state => state.nodes);
+	const edges = useGraphStore.use.edges();
+	const nodes = useGraphStore.use.nodes();
 
 	return (
 		<>{edges.map(edge => {

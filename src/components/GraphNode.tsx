@@ -35,7 +35,7 @@ function getNodeStyle(node: Node, mode: 'grab' | 'pointer' | 'not-allowed'): Rea
 
 export function GraphNode({node}: GraphNodeProps) {
 	const currentAction = useUiStore.use.currentAction();
-	const nodes = useGraphStore(state => state.nodes);
+	const nodes = useGraphStore.use.nodes();
 
 	let Handle = NullHandle;
 
@@ -94,7 +94,7 @@ function NullHandle({node, children}: GraphNodeHandleProps) {
 }
 
 function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
-	const addEdge = useGraphStore(state => state.addEdge);
+	const addEdge = useGraphStore.use.addEdge();
 	const dropEdge = useUiStore.use.dropEdge();
 	const pickUpEdge = useUiStore.use.pickUpEdge();
 	const heldEdgeSourceNode = useUiStore.use.sourceNode?.();
@@ -142,7 +142,7 @@ function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 }
 
 function MoveNodeHandle({node, children}: GraphNodeHandleProps) {
-	const updateNode = useGraphStore(state => state.updateNode);
+	const updateNode = useGraphStore.use.updateNode();
 
 	const rect = useUiStore.use.clientRect();
 	const startDraggingNode = useUiStore.use.startDraggingNode();

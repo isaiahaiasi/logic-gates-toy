@@ -1,12 +1,13 @@
 import {create} from 'zustand';
 import {type NodeId, type Edge, type Node, type EdgeId} from './graph';
+import {createSelectors} from '../utils/zustandHelpers';
 
-interface GraphStoreState {
+interface GraphStoreState extends Record<string, unknown> {
 	nodes: Record<NodeId, Node>;
 	edges: Edge[];
 }
 
-interface GraphStoreActions {
+interface GraphStoreActions extends Record<string, unknown> {
 	addNodes: (...nodes: Node[]) => void;
 	removeNode: (nodeId: NodeId) => void;
 	addEdge: (edge: Edge) => void;
@@ -22,7 +23,7 @@ interface GraphStoreActions {
 // - Removing a node should remove all of its child nodes.
 // - Edges must have two *existing* nodes.
 // - A node must have either no parent, or an *existing* parent.
-export const useGraphStore = create<GraphStoreState & GraphStoreActions>()(set => ({
+const useGraphStoreBase = create<GraphStoreState & GraphStoreActions>()(set => ({
 	nodes: {},
 	edges: [],
 
@@ -78,3 +79,5 @@ export const useGraphStore = create<GraphStoreState & GraphStoreActions>()(set =
 		}));
 	},
 }));
+
+export const useGraphStore = createSelectors(useGraphStoreBase);

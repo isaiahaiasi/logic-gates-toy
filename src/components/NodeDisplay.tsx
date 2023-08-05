@@ -7,7 +7,7 @@ const style: React.CSSProperties = {
 };
 
 export function NodeDisplay() {
-	const nodes = useGraphStore(state => state.nodes);
+	const nodes = useGraphStore.use.nodes();
 
 	return (
 		<div style={style}>
