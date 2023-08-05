@@ -12,6 +12,7 @@ interface GraphNodeProps {
 const graphNodeStyle: React.CSSProperties = {
 	position: 'absolute',
 	userSelect: 'none',
+	WebkitUserSelect: 'none',
 	background: 'grey',
 	borderRadius: '100px',
 	display: 'flex',
@@ -19,7 +20,7 @@ const graphNodeStyle: React.CSSProperties = {
 	alignItems: 'center',
 };
 
-function getNodeStyle(node: Node): React.CSSProperties {
+function getNodeStyle(node: Node, mode: 'grab' | 'extend'): React.CSSProperties {
 	const width = typeof node.size === 'number' ? node.size : node.size.x;
 	const height = typeof node.size === 'number' ? node.size : node.size.y;
 
@@ -28,6 +29,7 @@ function getNodeStyle(node: Node): React.CSSProperties {
 		height: `${height}px`,
 		top: `calc(${node.position.y * 100}% - ${height / 2}px)`,
 		left: `calc(${node.position.x * 100}% - ${width / 2}px)`,
+		cursor: mode === 'grab' ? 'grab' : 'pointer',
 	};
 }
 
@@ -85,7 +87,7 @@ function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 		}
 	};
 
-	const localStyle = getNodeStyle(node);
+	const localStyle = getNodeStyle(node, 'extend');
 
 	return (
 		<div onClick={handleClick} style={{
@@ -131,7 +133,7 @@ function MoveNodeHandle({node, children}: GraphNodeHandleProps) {
 		},
 	});
 
-	const localStyle = getNodeStyle(node);
+	const localStyle = getNodeStyle(node, 'grab');
 
 	return (
 		<div ref={dragRef} style={{

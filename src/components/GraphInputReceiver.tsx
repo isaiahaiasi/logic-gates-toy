@@ -90,8 +90,6 @@ function BeginEdgeSliceInputHandler({rect}: InputHandlerProps) {
 			y: e.clientY - rect.y,
 		};
 
-		// !!!
-		// TODO: FIX THIS!!!!
 		sliceEdge(slicePos);
 	};
 
