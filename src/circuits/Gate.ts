@@ -60,8 +60,8 @@ export class NotGate extends Gate {
 }
 
 export class RelayGate extends Gate {
-	constructor() {
-		super(1, 1);
+	constructor(size: number) {
+		super(size, size);
 	}
 
 	getState(): boolean[] {

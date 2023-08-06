@@ -88,13 +88,21 @@ describe('NOT gate conforms to AND truth table', () => {
 	test.each(truthTables.NOT)('!%d -> %d', testRow);
 });
 
-describe('RELAY gate conforms to idenity truth table', () => {
-	const testRow = (a: boolean, expected: boolean) => {
-		const relay = new RelayGate();
+describe('Relay Gate conforms to idenity behavior', () => {
+	// Tests single input->output states for difference relay sizes
+	test.each([1, 2, 3])('Relay size: %i', n => {
+		const relay = new RelayGate(n);
+		for (let i = 0; i < n; i++) {
+			for (let j = 0; j < n; j++) {
+				relay.setInput(j, false);
+			}
 
-		relay.setInput(0, a);
-		expect(relay.outputState).toEqual([expected]);
-	};
+			relay.setInput(i, true);
 
-	test.each(truthTables.RELAY)('%d -> %d', testRow);
+			for (let j = 0; j < n; j++) {
+				const result = j === i;
+				expect(relay.outputState[j]).toBe(result);
+			}
+		}
+	});
 });
