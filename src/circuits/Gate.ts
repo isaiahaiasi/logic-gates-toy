@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {Chip} from './Chip';
 
-/** A "Gate" is a stateless circuit that does not itself contain any chips. */
+/** A "Gate" is a stateless circuit that does not itself contain any chips.
+ * It is expressible as a Truth Table.
+*/
 abstract class Gate extends Chip {
 	setInput(pin: number, active: boolean) {
 		if (pin >= this.inputCount) {
@@ -57,10 +59,21 @@ export class NotGate extends Gate {
 	}
 }
 
+export class RelayGate extends Gate {
+	constructor() {
+		super(1, 1);
+	}
+
+	getState(): boolean[] {
+		return this.inputState;
+	}
+}
+
 export const gateConstructors = {
 	AND: AndGate,
 	NOT: NotGate,
 	OR: OrGate,
+	RELAY: RelayGate,
 };
 
 export type GateName = keyof typeof gateConstructors;

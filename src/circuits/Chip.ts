@@ -18,7 +18,7 @@ export abstract class Chip {
 		this.outputState = new Array(outputCnt).fill(false) as boolean[];
 	}
 
-	addListener(chip: Chip, outPin: number, inPin: number) {
+	addListener(outPin: number, chip: Chip, inPin: number) {
 		if (outPin > this.outputCount) {
 			throw new Error(`Could not add listener on output pin ${outPin}; pin does not exist!`);
 		}

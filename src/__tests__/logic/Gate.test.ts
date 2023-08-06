@@ -1,89 +1,100 @@
-// I'm just not really sure what they should be...
+/* eslint-disable @typescript-eslint/naming-convention */
+import {describe, expect, test} from 'vitest';
+import {AndGate, type GateName, NotGate, OrGate, RelayGate} from '../../circuits/Gate';
+import {Chip} from '../../circuits/Chip';
 
-import {describe, expect, test, vi} from 'vitest';
-import {Gate} from '../../logic/Gate';
+class ListenerMock extends Chip {
+	constructor() {
+		super(1, 0);
+	}
 
-describe('Generic gate behavior', () => {
-	describe('gate is initialized with the correct inputs and outputs', () => {
-		const ioCounts = [
-			[0, 0],
-			[1, 1],
-			[2, 5],
-			[4, 2],
-			[1023, 1029],
-		];
+	setInput(pin: number, active: boolean) {
+		this.outputState[pin] = active;
+	}
+}
 
-		const testRow = (inCount: number, outCount: number) => {
-			const gate = new Gate(inCount, outCount);
-			expect(gate.inputs.length).toBe(inCount);
-			expect(gate.outputs.length).toBe(outCount);
-		};
+const truthTables: Record<GateName, boolean[][]> = {
+	AND: [
+		// In1,  in2,   out
+		[false, false, false],
+		[false, true, false],
+		[true, false, false],
+		[true, true, true],
+	],
+	OR: [
+		// In1,  in2,   out
+		[false, false, false],
+		[false, true, true],
+		[true, false, true],
+		[true, true, true],
+	],
+	NOT: [
+		// In,  out
+		[false, true],
+		[true, false],
+	],
+	RELAY: [
+		// In,  out
+		[true, true],
+		[false, false],
+	],
+};
 
-		test.each(ioCounts)('in#: %i, out#: %i', testRow);
-	});
+describe('Gate', () => {
+	test('sends signal to listeners when output changes', () => {
+		const listener = new ListenerMock();
+		const gate = new AndGate();
 
-	test('setInput() sets the input state', () => {
-		const gate = new Gate(1, 0);
-
-		expect(gate.inputs[0]).toBe(false); // Default off
-
+		gate.addListener(0, listener, 0);
 		gate.setInput(0, true);
-		expect(gate.inputs[0]).toBe(true);
+		gate.setInput(1, true);
 
-		gate.setInput(0, false);
-		expect(gate.inputs[0]).toBe(false);
+		expect(listener.outputState).toEqual([true]);
 	});
+});
 
-	test('setInput() calls the process() method', () => {
-		// The process() method is customized by child classes,
-		// And this class promises to call process whenever the inputs change
-		const gate = new Gate(1, 1);
-		const processSpy = vi.spyOn(gate, 'process');
-		gate.setInput(0, true);
-		expect(processSpy).toHaveBeenCalled();
-	});
+describe('AND gate conforms to AND truth table', () => {
+	const testRow = (a: boolean, b: boolean, expected: boolean) => {
+		const and = new AndGate();
 
-	test('setOutput() sets the output state', () => {
-		const gate = new Gate(0, 1);
-		expect(gate.outputs[0].state).toBe(false);
-		gate.setOutput(0, true);
-		expect(gate.outputs[0].state).toBe(true);
-	});
+		and.setInput(0, a);
+		and.setInput(1, b);
+		expect(and.outputState).toEqual([expected]);
+	};
 
-	test('setOutput() calls setInput() for any listeners on that pin', () => {
-		const sender = new Gate(0, 1);
-		const listener = new Gate(1, 0);
-		const outPin = 0;
-		const inPin = 0;
-		const inputSpy = vi.spyOn(listener, 'setInput');
+	test.each(truthTables.AND)('%d & %d -> %d', testRow);
+});
 
-		sender.outputs[outPin].listeners.push({chip: listener, pin: inPin});
+describe('OR gate conforms to OR truth table', () => {
+	const testRow = (a: boolean, b: boolean, expected: boolean) => {
+		const or = new OrGate();
 
-		sender.setOutput(outPin, true);
+		or.setInput(0, a);
+		or.setInput(1, b);
+		expect(or.outputState).toEqual([expected]);
+	};
 
-		expect(inputSpy).toHaveBeenCalledWith(inPin, true);
-	});
+	test.each(truthTables.OR)('%d | %d -> %d', testRow);
+});
 
-	test('addListener() adds listener to given IO pin', () => {
-		const sender = new Gate(0, 4);
-		const listener1 = {chip: new Gate(1, 0), pin: 0};
-		const listener2 = {chip: new Gate(3, 1), pin: 2};
+describe('NOT gate conforms to AND truth table', () => {
+	const testRow = (a: boolean, expected: boolean) => {
+		const not = new NotGate();
 
-		expect(sender.outputs[0].listeners.length).toBe(0);
-		expect(sender.outputs[1].listeners.length).toBe(0);
-		expect(sender.outputs[2].listeners.length).toBe(0);
-		expect(sender.outputs[3].listeners.length).toBe(0);
+		not.setInput(0, a);
+		expect(not.outputState).toEqual([expected]);
+	};
 
-		sender.addListener(3, listener2);
-		expect(sender.outputs[3].listeners.length).toBe(1);
+	test.each(truthTables.NOT)('!%d -> %d', testRow);
+});
 
-		sender.addListener(0, listener1);
-		expect(sender.outputs[0].listeners.length).toBe(1);
+describe('RELAY gate conforms to idenity truth table', () => {
+	const testRow = (a: boolean, expected: boolean) => {
+		const relay = new RelayGate();
 
-		sender.addListener(0, listener2);
-		expect(sender.outputs[0].listeners.length).toBe(2);
+		relay.setInput(0, a);
+		expect(relay.outputState).toEqual([expected]);
+	};
 
-		expect(sender.outputs[1].listeners.length).toBe(0);
-		expect(sender.outputs[2].listeners.length).toBe(0);
-	});
+	test.each(truthTables.RELAY)('%d -> %d', testRow);
 });
