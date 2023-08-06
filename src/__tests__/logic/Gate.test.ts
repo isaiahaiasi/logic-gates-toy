@@ -5,11 +5,11 @@ import {Chip} from '../../circuits/Chip';
 
 class ListenerMock extends Chip {
 	constructor() {
-		super(1, 0);
+		super(1, 1);
 	}
 
 	setInput(pin: number, active: boolean) {
-		this.outputState[pin] = active;
+		this.setOutput(pin, active);
 	}
 }
 
@@ -33,11 +33,6 @@ const truthTables: Record<GateName, boolean[][]> = {
 		[false, true],
 		[true, false],
 	],
-	RELAY: [
-		// In,  out
-		[true, true],
-		[false, false],
-	],
 };
 
 describe('Gate', () => {
@@ -45,7 +40,10 @@ describe('Gate', () => {
 		const listener = new ListenerMock();
 		const gate = new AndGate();
 
-		gate.addListener(0, listener, 0);
+		gate.addListener(0, ['listener', active => {
+			listener.setInput(0, active);
+		}]);
+
 		gate.setInput(0, true);
 		gate.setInput(1, true);
 

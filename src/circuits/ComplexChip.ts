@@ -1,24 +1,38 @@
 import {Chip} from './Chip';
+import {type CircuitDescription} from './ComplexChipFactory';
 import {RelayGate} from './Gate';
 
+/** A chip with an internal circuit, which is generated at instantiation.
+ * Is composed of other chips, and may be "stateful" (eg, a Latch).
+ */
 export abstract class ComplexChip extends Chip {
-	private readonly inputRelay: RelayGate;
-	private readonly outputRelay: RelayGate;
+	// NOTE: It's not really necessary that these relays be full Chips.
+	// NOTE: I just need the "inputs" & "outputs" to have the Chip interface.
+	// NOTE: (really, I don't even need that--IN & OUT could be special cases in the Factory.)
+	protected readonly inputRelay: RelayGate;
+	protected readonly outputRelay: RelayGate;
+	protected readonly abstract def: CircuitDescription;
 
 	constructor(inputCnt: number, outputCnt: number) {
 		super(inputCnt, outputCnt);
 		this.inputRelay = new RelayGate(inputCnt);
 		this.outputRelay = new RelayGate(outputCnt);
-		this.buildCircuit(this.inputRelay, this.outputRelay);
+		this.buildCircuit();
+
+		for (let i = 0; i < outputCnt; ++i) {
+			this.outputRelay.addListener(0, ['complex_chip_output_wrapper', active => {
+				this.setOutput(i, active);
+			}]);
+		}
+	}
+
+	get outputState() {
+		return this.outputRelay.outputState;
 	}
 
 	setInput(pin: number, active: boolean): void {
-		if (pin >= this.inputCount) {
-			throw new Error(`Invalid input index ${pin}!`);
-		}
-
 		this.inputRelay.setInput(pin, active);
 	}
 
-	abstract buildCircuit(inputRelay: RelayGate, outputRelay: RelayGate): void;
+	abstract buildCircuit(): void;
 }
