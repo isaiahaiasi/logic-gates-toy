@@ -56,7 +56,7 @@ export class ComplexChipFactory {
 		return NewComplexChip;
 	}
 
-	// "Wires up" cinternals of chip based on the given description object.
+	// "Wires up" internals of chip based on the given description object.
 	// NOTE: Because this is only called when the chip is instantiated,
 	// NOTE: the order chip constructors are "built" does not matter.
 	// NOTE: (eg, if Chip A depends on Chip B)
@@ -93,7 +93,7 @@ export class ComplexChipFactory {
 				throw new Error(`Could not find chip ${inputChipId}`);
 			}
 
-			outputChip.addListener(outputPin, [inputChipId, active => {
+			outputChip.addWire(outputPin, [inputChipId, active => {
 				inputChip.setInput(inputPin, active);
 			}]);
 		});

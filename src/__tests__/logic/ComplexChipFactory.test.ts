@@ -260,8 +260,7 @@ describe('Chip de-serialization', () => {
 		);
 	});
 
-	// TODO
-	test.skip('SR-Latch (no NOR)', () => {
+	test('SR-Latch (no NOR)', () => {
 		// OR-NOT-AND Latch
 		const latchDef = {
 			typeId: 'SR-LATCH',
@@ -300,55 +299,52 @@ describe('Chip de-serialization', () => {
 		expect(latch.outputState).toEqual([false]);
 	});
 
-	// // TODO: WHY DOES THE OTHER LATCH WORK BUT NOT THIS ONE???
-	// test('SR-Latch (NOR)', () => {
-	// 	// Traditional latch
-	// 	const latchDef = {
-	// 		io: [2, 2],
-	// 		chips: {
-	// 			n1: 'NOR',
-	// 			n2: 'NOR',
-	// 		},
-	// 		edges: [
-	// 			['IN', 0, 'n1', 0],
-	// 			['n1', 0, 'OUT', 0],
-	// 			['n1', 0, 'n2', 0],
-	// 			['n2', 0, 'OUT', 1],
-	// 			['n2', 0, 'n1', 1],
-	// 			['IN', 1, 'n2', 1],
-	// 		],
-	// 	} satisfies ChipDefinitionObject;
+	test('SR-Latch (NOR)', () => {
+		const latchDef = {
+			typeId: 'SR_LATCH',
+			inputCount: 2,
+			outputCount: 2,
+			chips: {
+				n1: 'NOR',
+				n2: 'NOR',
+			},
+			wires: [
+				['IN', 0, 'n1', 0],
+				['n1', 0, 'OUT', 0],
+				['n1', 0, 'n2', 0],
+				['n2', 0, 'OUT', 1],
+				['n2', 0, 'n1', 1],
+				['IN', 1, 'n2', 1],
+			],
+		} satisfies CircuitDescription;
 
-	// 	const deserializer = new ComplexChipFactory();
+		const factory = new ComplexChipFactory();
 
-	// 	const chips = deserializer.deserializeChips({
-	// 		NAND: chipExamples.nand.def,
-	// 		OR: chipExamples.or.def,
-	// 		NOR: chipExamples.nor.def,
-	// 		LATCH: latchDef,
-	// 	});
+		factory.buildChip(chipExamples.nand.def);
+		factory.buildChip(chipExamples.nor.def);
+		const Latch = factory.buildChip(latchDef);
 
-	// 	const latch = new chips.LATCH();
+		const latch = new Latch();
 
-	// 	// TODO: For some reason, the RESET input must be triggered to initialize this chip
-	// 	// Otherwise, it's starts in an invalid state with both outputs FALSE
-	// 	// (the outputs are Q & bar-Q)
-	// 	latch.setInput(1, true);
-	// 	latch.setInput(1, false);
+		// The "RESET" input must be triggered to initialize this chip
+		// Otherwise, it's starts in a "garbage" state.
+		latch.setInput(1, true);
+		latch.setInput(1, false);
 
-	// 	// Setting "SET" (input 0) true outputs true
-	// 	latch.setInput(0, true);
-	// 	expect(latch.outputs[0].state).toBe(false);
-	// 	expect(latch.outputs[1].state).toBe(true);
+		// Setting "SET" (input 0) true outputs true
+		latch.setInput(0, true);
+		expect(latch.outputState[0]).toBe(false);
+		expect(latch.outputState[1]).toBe(true);
 
-	// 	// Latch remembers SET even when SET input is turned off
-	// 	latch.setInput(0, false);
-	// 	expect(latch.outputs[0].state).toBe(false);
-	// 	expect(latch.outputs[1].state).toBe(true);
+		// Latch remembers SET even when SET input is turned off
+		latch.setInput(0, false);
+		expect(latch.outputState[0]).toBe(false);
+		expect(latch.outputState[1]).toBe(true);
 
-	// 	// "Pressing" "RESET" (input 1) resets output to false
-	// 	latch.setInput(1, true);
-	// 	latch.setInput(1, false);
-	// 	expect(latch.outputs[0].state).toBe(true);
-	// 	expect(latch.outputs[1].state).toBe(false);
+		// "Pressing" "RESET" (input 1) resets output to false
+		latch.setInput(1, true);
+		latch.setInput(1, false);
+		expect(latch.outputState[0]).toBe(true);
+		expect(latch.outputState[1]).toBe(false);
+	});
 });

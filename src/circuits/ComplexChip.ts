@@ -20,7 +20,7 @@ export abstract class ComplexChip extends Chip {
 		this.buildCircuit();
 
 		for (let i = 0; i < outputCnt; ++i) {
-			this.outputRelay.addListener(0, ['complex_chip_output_wrapper', active => {
+			this.outputRelay.addWire(0, ['complex_chip_output_wrapper', active => {
 				this.setOutput(i, active);
 			}]);
 		}

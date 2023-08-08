@@ -40,7 +40,7 @@ describe('Gate', () => {
 		const listener = new ListenerMock();
 		const gate = new AndGate();
 
-		gate.addListener(0, ['listener', active => {
+		gate.addWire(0, ['listener', active => {
 			listener.setInput(0, active);
 		}]);
 

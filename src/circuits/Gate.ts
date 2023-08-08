@@ -22,11 +22,9 @@ abstract class Gate extends Chip {
 		for (let i = 0; i < newState.length; ++i) {
 			// This only works if the circuit starts in a "valid" state.
 			// If not, then we need to run through everything at least once.
-			// if (this.outputState[i] !== newState[i]) {
-			// 	this.setOutput(i, newState[i]);
-			// }
-
-			this.setOutput(i, newState[i]);
+			if (this.outputState[i] !== newState[i]) {
+				this.setOutput(i, newState[i]);
+			}
 		}
 	}
 
