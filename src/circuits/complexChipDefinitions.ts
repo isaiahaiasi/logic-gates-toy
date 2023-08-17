@@ -1,4 +1,4 @@
-import {type CircuitDescription} from './ComplexChipFactory';
+import {type CircuitDescription} from './CircuitDescription';
 
 type TruthTable = number[][];
 

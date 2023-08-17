@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import {type CircuitDescription} from '../../circuits/CircuitDescription';
 import {complexGates} from '../../circuits/complexChipDefinitions';
-import {type CircuitDescription, ComplexChipFactory} from '../../circuits/ComplexChipFactory';
+import {ComplexChipFactory} from '../../circuits/ComplexChipFactory';
 
 function getCompleteGateFactory() {
 	const factory = new ComplexChipFactory();

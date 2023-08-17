@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {describe, expect, test} from 'vitest';
-import {ComplexChipFactory, type CircuitDescription} from '../../circuits/ComplexChipFactory';
+import {ComplexChipFactory} from '../../circuits/ComplexChipFactory';
+import {type CircuitDescription} from '../../circuits/CircuitDescription';
 
 const swapDef: CircuitDescription = {
 	typeId: 'SWAP',
@@ -16,9 +17,9 @@ const swapDef: CircuitDescription = {
 describe('Chip de-serialization', () => {
 	test('throws on attempt to overwrite chip with new definition', () => {
 		const chipFactory = new ComplexChipFactory();
-		const overwrite = () => chipFactory.buildChip(swapDef);
 
 		chipFactory.buildChip(swapDef);
+		const overwrite = () => chipFactory.buildChip(swapDef);
 
 		expect(overwrite).toThrow();
 	});
