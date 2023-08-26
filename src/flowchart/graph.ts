@@ -21,6 +21,10 @@ export interface Node {
 		label: string;
 	};
 
+	style: {
+		active: boolean;
+	};
+
 	// Node descriptions?: color/shape/style?
 }
 
@@ -28,7 +32,10 @@ export interface Edge {
 	id: EdgeId;
 	source: NodeId;
 	target: NodeId;
-	// Edge descriptions?: corner management, additional points, color/style/etc?
+	style: {
+		active: boolean;
+		// Edge descriptions?: corner management, additional points, color/style/etc?
+	};
 }
 
 /** Node position may be relative to parent,

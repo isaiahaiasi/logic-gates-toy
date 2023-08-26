@@ -99,6 +99,7 @@ function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 	const pickUpEdge = useUiStore.use.pickUpEdge();
 	const heldEdgeSourceNode = useUiStore.use.sourceNode?.();
 
+	const isHoldingEdge = heldEdgeSourceNode !== undefined;
 	const isDrawingEdgeFromThis = heldEdgeSourceNode === node.id;
 
 	// Adding edge
@@ -106,14 +107,16 @@ function AddEdgeHandle({node, children}: GraphNodeHandleProps) {
 		e.stopPropagation();
 
 		if (isDrawingEdgeFromThis) {
+			// Clicking the node you're currently extending an edge from is a no-op.
 			return;
 		}
 
-		if (heldEdgeSourceNode) {
+		if (isHoldingEdge) {
 			addEdge({
 				id: Date.now(),
 				source: heldEdgeSourceNode,
 				target: node.id,
+				style: {active: false},
 			});
 
 			dropEdge();

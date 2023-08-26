@@ -12,6 +12,9 @@ const nodeTemplate: NodeTemplate = {
 		data: {
 			label: `A:${Math.round(info.spawnPosition.x * 100)}|${Math.round(info.spawnPosition.y * 100)}`,
 		},
+		style: {
+			active: false,
+		},
 	}),
 };
 

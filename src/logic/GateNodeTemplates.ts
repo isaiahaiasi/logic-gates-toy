@@ -16,6 +16,7 @@ function getPinNode(id: string, pin: string, position: Vec2): Node {
 		data: {label: ''},
 		parent: id,
 		lockPosition: true,
+		style: {active: false},
 	};
 }
 
@@ -37,6 +38,7 @@ export const andTemplate: NodeTemplate = {
 					getChildId(id, 'IN1'),
 					getChildId(id, 'OUT'),
 				],
+				style: {active: false},
 			},
 			getPinNode(id, 'IN0', {x: 0, y: 0}),
 			getPinNode(id, 'IN1', {x: 0, y: 1}),
@@ -62,6 +64,7 @@ export const notTemplate: NodeTemplate = {
 					getChildId(id, 'IN'),
 					getChildId(id, 'OUT'),
 				],
+				style: {active: false},
 			},
 			getPinNode(id, 'IN', {x: 0, y: 0.5}),
 			getPinNode(id, 'OUT', {x: 1, y: 0.5}),
@@ -87,6 +90,7 @@ export const orTemplate: NodeTemplate = {
 					getChildId(id, 'IN1'),
 					getChildId(id, 'OUT'),
 				],
+				style: {active: false},
 			},
 			getPinNode(id, 'IN0', {x: 0, y: 0}),
 			getPinNode(id, 'IN1', {x: 0, y: 1}),
