@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import {useRef, useState, useEffect, useCallback} from 'react';
 import {throttleToFrame as throttle} from '../utils/debounce';
-import {type Vec2} from '../flowchart/Vec2';
+import {type Vec2} from '../utils/Vec2';
 
 // From https://stackoverflow.com/a/39192992
 

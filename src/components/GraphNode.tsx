@@ -3,7 +3,7 @@ import {useGraphStore} from '../flowchart/graphStore';
 import {useUiStore} from '../state_management/uiStore';
 import {useDraggable} from '../hooks/useDraggable';
 import {type PropsWithChildren} from 'react';
-import {type Vec2} from '../flowchart/Vec2';
+import {type Vec2} from '../utils/Vec2';
 
 interface GraphNodeProps {
 	node: Node;

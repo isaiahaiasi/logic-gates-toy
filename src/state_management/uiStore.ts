@@ -1,6 +1,6 @@
 import {create} from 'zustand';
 import {type Node, type NodeId} from '../flowchart/graph';
-import {type Vec2} from '../flowchart/Vec2';
+import {type Vec2} from '../utils/Vec2';
 import {createSelectors} from '../utils/zustandHelpers';
 
 interface NodePlacementInfo {

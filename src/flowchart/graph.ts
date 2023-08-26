@@ -1,4 +1,4 @@
-import {type Vec2, v2Math} from './Vec2';
+import {type Vec2, v2Math} from '../utils/Vec2';
 
 export type NodeId = string | number;
 export type EdgeId = string | number;

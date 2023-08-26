@@ -1,7 +1,7 @@
 import {useMouseMove} from '../../hooks/useMouseMove';
 import {useUiStore} from '../../state_management/uiStore';
 import {useGraphStore} from '../../flowchart/graphStore';
-import {type Vec2} from '../../flowchart/Vec2';
+import {type Vec2} from '../../utils/Vec2';
 import {getClientSpaceNodePosition} from '../../flowchart/graph';
 
 // NOTE: This wrapping component might not really be necessary.

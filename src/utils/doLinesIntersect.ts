@@ -1,5 +1,5 @@
 
-import {type Vec2} from '../flowchart/Vec2';
+import {type Vec2} from './Vec2';
 
 type TripletOrientation = 'CLOCKWISE' | 'COUNTER-CLOCKWISE' | 'COLLINEAR';
 

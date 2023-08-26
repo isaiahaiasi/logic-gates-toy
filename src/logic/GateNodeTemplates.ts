@@ -1,4 +1,4 @@
-import {type Vec2} from '../flowchart/Vec2';
+import {type Vec2} from '../utils/Vec2';
 import {type Node} from '../flowchart/graph';
 import {type NodeTemplate} from '../state_management/uiStore';
 
