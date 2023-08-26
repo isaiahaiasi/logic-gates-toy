@@ -3,6 +3,23 @@ import {type Node, type NodeId} from '../flowchart/graph';
 import {type Vec2} from '../utils/Vec2';
 import {createSelectors} from '../utils/zustandHelpers';
 
+// `jsdom` previously did not implement DOMRect
+// (https://stackoverflow.com/a/71588871)
+// It has been implemented as of v22.1.0 (https://github.com/jsdom/jsdom/releases/tag/22.1.0)
+// but for some reason tests relying on it still fail.
+// So instead of relying on it directly, we use a simplified interface.
+interface SimpleRect {
+	width: number;
+	height: number;
+
+	// Using x,y instead of left,top because even though it's slightly ambiguous,
+	// left,top is not always equal to the origin (eg, if height is negative).
+	/** X-axis origin (generally equal to the position of the left side) */
+	x: number;
+	/** Y-axis origin (generally equal to the position of the top side) */
+	y: number;
+}
+
 interface NodePlacementInfo {
 	spawnPosition: Vec2;
 }
@@ -46,13 +63,13 @@ interface UiState extends Record<string, unknown> {
 	/** If REMOVING_EDGE, the starting position of the edge slice. */
 	edgeSliceStart?: Vec2;
 
-	clientRect: DOMRect;
+	clientRect: SimpleRect;
 
 	dragModeModifierHeld: boolean;
 }
 
 interface UiActions extends Record<string, unknown> {
-	setClientRect: (clientRect: DOMRect) => void;
+	setClientRect: (clientRect: SimpleRect) => void;
 	pickUpNodeTemplate: (template: NodeTemplate) => void;
 	dropNodeTemplate: () => void;
 	pickUpEdge: (sourceId: NodeId) => void;
@@ -71,7 +88,7 @@ interface UiActions extends Record<string, unknown> {
 const useUiStoreBase = create<UiState & UiActions>()(set => ({
 	currentAction: 'NONE',
 
-	clientRect: new DOMRect(0, 0, 0, 0),
+	clientRect: {x: 0, y: 0, width: 0, height: 0},
 
 	heldNodeTemplate: undefined,
 
